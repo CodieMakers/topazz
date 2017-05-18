@@ -1,0 +1,9 @@
+{
+  "name": "Topazz",
+  "version": "0.0.1",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^3.1.0",
+    "node-sass": "^4.5.2"
+  }
+}

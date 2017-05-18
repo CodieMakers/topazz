@@ -1,0 +1,27 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="/public/css/admin.css">
+{% endblock %}
+{% block content %}
+    <header class="absolute top-0 left-0 bg-admin-nav white full-height">
+        <section id="user-info" class="clearfix py2 px1 border-bottom border-black">
+            <div class="col col-3">
+                <img src="{{ user.profile_picture }}" class="circle fit">
+            </div>
+            <div class="col col-9 flex flex-column items-center">
+                <a href="/admin/user/{{ user.id }}" class="white">
+                    {{ user.first_name ~ ' ' ~ user.last_name }}
+                </a>
+            </div>
+        </section>
+        {% include 'admin/navigation.twig' %}
+    </header>
+    <main class="absolute top-0 right-0 left-0 full-height bg-white overflow-auto">
+        {% block page %}
+
+        {% endblock %}
+
+    </main>
+{% endblock %}

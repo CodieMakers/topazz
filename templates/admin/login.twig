@@ -1,0 +1,47 @@
+{% extends "layout.twig" %}
+
+{% block styles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="/public/css/login.css">
+{% endblock %}
+
+
+{% block content %}
+    <section id="login-form" class="bg-platinum charcoal">
+        <h1 class="block center border-bottom border-moonstone-blue pb2">Login</h1>
+        <form action="/login" method="post" class="mt3" autocomplete="off" novalidate>
+            <div class="clearfix relative">
+                <label for="username" class="absolute top-0 left-0 z-1 px1 m1">
+                    <i class="fa fa-user"></i>
+                </label>
+                <input type="text" placeholder="Username" id="username" name="username"
+                       class="px3 input" required value="{{ username }}"/>
+            </div>
+            <div class="clearfix relative">
+                <label for="password" class="absolute top-0 left-0 z-1 px1 m1">
+                    <i class="fa fa-lock"></i>
+                </label>
+                <input type="password" id="password" name="password"
+                       class="px3 input" required value="{{ password }}"/>
+                <div class="absolute top-0 right-0 px1 m1" id="password-reveal">
+                    <i class="fa fa-eye"></i>
+                </div>
+            </div>
+            <div class="clearfix flex items-center">
+                <label for="remember-me" class="h6">Remember me on this computer:</label>
+                <input type="checkbox" name="remember-me" id="remember-me"/>
+            </div>
+            <div class="clearfix">
+                <div class="right">
+                    <button type="submit" class="btn btn-primary bg-moonstone-blue white">Login</button>
+                </div>
+            </div>
+        </form>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script type="application/javascript" src="/public/js/login.js"></script>
+{% endblock %}
+

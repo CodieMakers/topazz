@@ -1,0 +1,13 @@
+/vendor/
+/.vagrant/
+/.idea/
+/composer.lock
+
+!/index.php
+!/composer.json
+!/.htaccess
+/docs/
+/storage/cache/
+/storage/log/
+/node_modules/
+/public/css/

@@ -1,0 +1,3 @@
+[submodule "admin"]
+    path = storage/modules/admin
+    url = git://github.com/CodieMakers/topazz-admin.git

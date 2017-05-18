@@ -1,0 +1,12 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    <section class="full-page bg-white relative overflow-hidden">
+        {%- block background %}{% endblock -%}
+    </section>
+    <section class="full-page absolute top-0 left-0 bg-transparent p2 flex flex-column justify-center items-center">
+        <h1 class="silver bold h0 mb0">Oops!</h1>
+        <h1 class="silver mt1 mb2">Something went really wrong.</h1>
+        {% block message -%}{%- endblock %}
+    </section>
+{% endblock %}

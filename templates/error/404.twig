@@ -1,0 +1,13 @@
+{% extends "layout.twig" %}
+
+{% block background %}
+    <img class="fit" src="/public/img/error-404-path-blur.png">
+    <div class="absolute overflow-hidden" style="top: 10vh; bottom: 10vh; left: 10vw; right: 10vw; box-shadow: rgba(0,0,0,.5) 0 0 50px 0;">
+        <img class="fit" src="/public/img/error-404-path.png">
+    </div>
+{% endblock %}
+
+{% block message %}
+    <h2 class="white">This is not the path you are looking for.</h2>
+    <a class="btn btn-primary btn-big bg-white gray mt3" href="/">Return home</a>
+{% endblock %}
