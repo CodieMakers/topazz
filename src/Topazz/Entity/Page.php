@@ -10,4 +10,7 @@ namespace Topazz\Entity;
 
 class Page {
 
+    public $name;
+    public $title;
+    public $uri = "/";
 }

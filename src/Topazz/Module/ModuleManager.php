@@ -9,39 +9,25 @@ namespace Topazz\Module;
 
 
 use Topazz\Container;
+use Topazz\Installer\InstallerModule;
 
 class ModuleManager {
 
+    /** @var Container $container */
     private $container;
-    /**
-     * @var Module[] $registeredModules
-     */
+    /** @var Module[] $registeredModules */
     private $registeredModules = [];
-    /**
-     * @var Module[] $enabledModules
-     */
-    private $enabledModules = [];
 
     public function __construct(Container $container) {
         $this->container = $container;
-    }
-
-    /**
-     * @param string $module
-     *
-     * @return ModuleManager
-     */
-    public function add($module) {
-        $this->registeredModules[] = $module;
-        return $this;
+        $this->registeredModules[] = new InstallerModule();
+        $this->registeredModules = array_merge($this->registeredModules, Module::all()->toArray());
     }
 
     public function run() {
+        /** @var Module $module */
         foreach ($this->registeredModules as $module) {
-            /** @var Module $module */
-            $module = new $module($this->container);
-            if ($module->isEnabled()) {
-                $this->enabledModules[] = $module;
+            if ($module->isActivated() && $module->isEnabled()) {
                 $module->setup();
             }
         }

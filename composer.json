@@ -7,9 +7,14 @@
   "authors": [
     {
       "name": "Lukáš Krotovič",
-      "email": "lk.firefox@gmail.com"
+      "email": "lukas@krotovic.cz"
     }
   ],
+  "autoload-dev": {
+    "psr-4": {
+      "Topazz\\Tests\\": "tests/Topazz/Tests/"
+    }
+  },
   "autoload": {
     "psr-4": {
       "Topazz\\": "src/Topazz/"
@@ -17,17 +22,16 @@
   },
   "require": {
     "php": ">=7.0.0",
-    "symfony/yaml": "3.2.*",
+    "topazz/composer": "^1.0.0",
     "slim/slim": "^3.8",
-    "slim/pdo": "^1.10",
     "slim/twig-view": "^2.2",
     "monolog/monolog": "^1.22",
-    "tuupola/slim-jwt-auth": "^2.3",
     "slim/csrf": "^0.8.1",
-    "symfony/dotenv": "dev-master",
+    "symfony/dotenv": "v3.3.0-RC1",
     "slim/flash": "^0.2.0",
     "kanellov/slim-twig-flash": "^0.2.0",
-    "vlucas/spot2": "v2.2.0",
-    "illuminate/database": "v5.4.0"
+    "phpunit/phpunit": "6.1.*",
+    "phpunit/php-code-coverage": "5.2.*",
+    "composer/composer": "1.4.2"
   }
 }

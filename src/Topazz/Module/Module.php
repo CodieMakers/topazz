@@ -8,26 +8,41 @@
 namespace Topazz\Module;
 
 
-use Psr\Container\ContainerInterface;
 use Slim\App;
-use Slim\Router;
-use Slim\Views\Twig;
 use Topazz\Application;
+use Topazz\Container;
+use Topazz\Database\Entity;
+use Topazz\Database\Table;
+use Topazz\View\Twig;
 
-abstract class Module {
+abstract class Module extends Entity {
 
-    /** @var ContainerInterface $container */
+    public $name;
+    public $module_class;
+    public $activated = false;
+    /** @var Container $container */
     protected $container;
-    /** @var Twig $view */
-    protected $view;
     /** @var App $router */
     protected $router;
 
-    public function __construct(ContainerInterface $container) {
-        $this->container = $container;
-        $this->view = $container->get('view');
+    public function __construct() {
+        $this->container = Application::getInstance()->getContainer();
         $this->router = Application::getInstance();
+        parent::__construct();
     }
+
+    public function isActivated() {
+        return $this->activated;
+    }
+
+    public static function getTable(): Table {
+        return new ModulesTable();
+    }
+
+    public function save() {
+        // TODO: Implement save() method.
+    }
+
 
     /**
      * @return boolean Returns TRUE if this module is enabled, otherwise FALSE.

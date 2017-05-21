@@ -11,3 +11,5 @@
 /storage/log/
 /node_modules/
 /public/css/
+/modules/*
+!/modules/.gitkeep

@@ -17,7 +17,6 @@ class Container extends SlimContainer {
 
     public function __construct(array $values = []) {
         parent::__construct($values);
-        $this->modules = new ModuleManager($this);
     }
 
     public function add($callable) {
@@ -25,7 +24,10 @@ class Container extends SlimContainer {
         return $this;
     }
 
-    public function getModules() {
+    public function getModuleManager() {
+        if (is_null($this->modules)) {
+            $this->modules = new ModuleManager(Application::getInstance()->getContainer());
+        }
         return $this->modules;
     }
 }

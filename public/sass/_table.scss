@@ -1,0 +1,78 @@
+table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+
+  thead {
+    background-color: transparentize($platinum, 0.5);
+  }
+
+  tr {
+    border: 0;
+
+    th,
+    td {
+      border: 0;
+      padding: 0.5rem;
+
+      &.right {
+        float: none;
+        text-align: right;
+      }
+
+      .btn.action {
+        border: 1px solid $moonstone-blue;
+        border-radius: 3px;
+        color: $moonstone-blue;
+        background-color: white;
+        text-decoration: none;
+        padding: 0.25rem 0.5rem;
+        margin-right: 0.5rem;
+
+        &:hover {
+          background-color: transparentize($moonstone-blue, 0.8);
+        }
+
+        &.danger {
+          border-color: $golden-gate;
+          color: white;
+          background-color: $golden-gate;
+          &:hover {
+            background-color: darken($golden-gate, 10%);
+          }
+        }
+
+        & > i.fa {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+
+  &.hover {
+    thead.sortable tr th:hover {
+      background: transparentize($moonstone-blue, 0.8);
+    }
+    tbody tr:hover {
+      background: transparentize($moonstone-blue, 0.8);
+    }
+  }
+
+  &.bordered {
+    td, th {
+      border: 1px solid transparentize($platinum, 0.4);
+    }
+    td:first-child, th:first-child {
+      border-left: 0;
+    }
+    td:last-child, th:last-child {
+      border-right: 0;
+    }
+    tr:last-child td {
+      border-bottom: 0;
+    }
+    tr:first-child th {
+      border-top: 0;
+    }
+  }
+}

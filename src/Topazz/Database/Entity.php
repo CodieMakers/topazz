@@ -8,11 +8,49 @@
 namespace Topazz\Database;
 
 
-class Entity {
+use Topazz\Application;
 
-    protected $table;
+abstract class Entity {
 
-    public function __construct(Table $table) {
-        $this->table = $table;
+    public $id;
+    /** @var Connector $db */
+    protected $db;
+
+    public function __construct() {
+        $this->db = self::db();
     }
+
+    /**
+     * @return Connector
+     */
+    private static function db() {
+        return Application::getInstance()->getContainer()->get("db");
+    }
+
+    public static function all() {
+        return self::db()->query(
+            Query::create("SELECT * FROM " . static::getTable()->getName())
+        )->run(static::class)->all();
+    }
+
+    public static function findBy($key, $value) {
+        return self::db()->query(
+            Query::create(
+                "SELECT * FROM " . static::getTable()->getName() . " WHERE $key = ?"
+            )->setAttributes([$value])
+        )->run(static::class)->all();
+    }
+
+    public static function findById(int $id) {
+        return self::findBy("id", $id)->first();
+    }
+
+    abstract public static function getTable(): Table;
+
+    public function entityName(): string {
+        $entityTable = static::getTable()->getName();
+        return substr($entityTable, 0, strlen($entityTable) - 2);
+    }
+
+    abstract public function save();
 }

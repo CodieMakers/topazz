@@ -1,0 +1,26 @@
+$moonstone-blue: #75B8C8;
+$golden-gate: #BC412B;
+$platinum: #E4E3D3;
+$space-cadet: #2E2D4D;
+$charcoal: #36494E;
+
+$colors: ('moonstone-blue', $moonstone-blue),
+  ('golden-gate', $golden-gate),
+  ('platinum', $platinum),
+  ('space-cadet', $space-cadet),
+  ('charcoal', $charcoal);
+
+@mixin build-colors() {
+  @each $colorName, $color in $colors {
+    .#{$colorName} {
+      color: $color;
+    }
+    .bg-#{$colorName} {
+      background-color: $color;
+    }
+    .border-#{$colorName} {
+      border-color: $color;
+    }
+  }
+
+}
