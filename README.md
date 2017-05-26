@@ -1,5 +1,7 @@
 # Topazz
 
+[![Build Status](https://travis-ci.org/CodieMakers/topazz.svg?branch=master)](https://travis-ci.org/CodieMakers/topazz)
+
 Topazz is simple CMS made as project for one programming course on University of economics in Prague.  
 It is for generating microsite network for whole domain.
 
