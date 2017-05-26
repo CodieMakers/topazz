@@ -40,7 +40,9 @@
     "monolog/monolog": "^1.22",
     "kanellov/slim-twig-flash": "^0.2.0",
     "symfony/dotenv": "v3.3.0-RC1",
-    "symfony/filesystem": "3.2.*"
+    "symfony/filesystem": "3.2.*",
+    "erusev/parsedown": "1.6.2",
+    "erusev/parsedown-extra": "0.7.1"
   },
   "require-dev": {
     "phpunit/phpunit": "6.1.*",
