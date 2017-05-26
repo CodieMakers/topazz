@@ -118,6 +118,7 @@ class InstallerModule extends ModuleWithTemplates {
 
     private function installEnvFile($dbHost, $dbName, $adminHost, $adminUri, string $ipRestriction = null) {
         $fileContent =
+            //"ENV=production" . PHP_EOL .
             "DB_HOST=" . $dbHost . PHP_EOL .
             "DB_NAME=" . $dbName . PHP_EOL .
             "DB_USER=topazz_db" . PHP_EOL .
