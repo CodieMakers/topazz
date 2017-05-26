@@ -16,6 +16,6 @@ use Slim\Http\Response;
 class PageController extends Controller {
 
     public function index(Request $request, Response $response) {
-        return $this->view->render($response, 'project/index.twig');
+        return $response;
     }
 }

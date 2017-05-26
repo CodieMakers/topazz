@@ -26,9 +26,9 @@ abstract class Module extends Entity {
     protected $router;
 
     public function __construct() {
+        parent::__construct();
         $this->container = Application::getInstance()->getContainer();
         $this->router = Application::getInstance();
-        parent::__construct();
     }
 
     public function isActivated() {

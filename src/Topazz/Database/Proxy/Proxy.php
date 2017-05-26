@@ -10,24 +10,25 @@ namespace Topazz\Database\Proxy;
 
 use Topazz\Application;
 use Topazz\Database\Connector;
-use Topazz\Database\Optional;
 use Topazz\Database\Query;
+use Topazz\Database\Statement\Statement;
 
-class Proxy {
+class Proxy implements \IteratorAggregate {
 
-    /** @var Connector $db */
-    private $db;
-    /** @var Query $query */
-    private $query;
+    /** @var Statement $statement */
+    private $statement;
     private $entityClass;
 
-    public function __construct(Query $query, string $entityClass) {
-        $this->db = Application::getInstance()->getContainer()->get('db');
-        $this->query = $query;
+    public function __construct(Statement $statement, string $entityClass) {
+        $this->statement = $statement;
         $this->entityClass = $entityClass;
     }
 
     public function all() {
-        return $this->db->query($this->query)->run($this->entityClass)->all();
+        return $this->statement->execute()->all();
+    }
+
+    public function getIterator() {
+        return $this->all()->getIterator();
     }
 }

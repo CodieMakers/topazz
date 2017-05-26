@@ -21,10 +21,11 @@ class UserTest extends TestCase {
      */
     protected function setUp() {
         parent::setUp();
-        $this->user = User::findById(1);
+        $this->user = User::findById(1)->orNull();
     }
 
     public function testUserPassword() {
+        self::assertNotNull($this->user);
         $this->assertTrue($this->user->matchPassword("admin"));
     }
 

@@ -1,4 +1,33 @@
 form {
+
+  input,
+  input + label,
+  label {
+    position: relative;
+  }
+
+  input:not([type=checkbox]):not([type=button]) {
+    &:focus {
+      outline: none;
+      border-color: $moonstone-blue;
+    }
+  }
+
+  label.required:after {
+    content: "\f005";
+    position: absolute;
+    top: -0.5rem;
+    right: 1rem;
+    color: $golden-gate;
+    font-family: "FontAwesome";
+    font-size: 0.7rem;
+  }
+
+  input[required]:invalid,
+  label.required + input:invalid {
+    border-color: $golden-gate;
+  }
+
   input[type=checkbox].toggle {
     display: block;
     line-height: 26px;
@@ -53,5 +82,9 @@ form {
         left: 43px;
       }
     }
+  }
+
+  .password-reveal:active {
+    color: $moonstone-blue;
   }
 }

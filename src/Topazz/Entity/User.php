@@ -20,6 +20,12 @@ class User extends Entity {
     const ROLE_EDITOR = 2;
     const ROLE_BLOGGER = 3;
 
+    protected static $permissions = [
+        self::ROLE_MODERATOR => [],
+        self::ROLE_EDITOR => [],
+        self::ROLE_BLOGGER => []
+    ];
+
     public $username;
     public $email;
     public $role = self::ROLE_BLOGGER;
@@ -28,12 +34,24 @@ class User extends Entity {
     public $profile_picture = "/public/img/profile.png";
     private $password;
 
+    public function __construct() {
+        parent::__construct();
+        self::fetchPermissions();
+    }
+
     public function setPassword(string $password) {
         $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
 
     public function matchPassword(string $password) {
         return password_verify($password, $this->password);
+    }
+
+    public function hasPermission(string $permission): bool {
+        if ($this->role == self::ROLE_ADMIN) {
+            return true;
+        }
+        return in_array($permission, self::$permissions[$this->role]);
     }
 
     public function save() {
@@ -79,5 +97,9 @@ class User extends Entity {
             ->varchar("first_name", 50)
             ->varchar("last_name", 50)
             ->create();
+    }
+
+    protected static function fetchPermissions() {
+        // TODO: implement
     }
 }

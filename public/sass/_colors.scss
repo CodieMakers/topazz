@@ -10,17 +10,36 @@ $colors: ('moonstone-blue', $moonstone-blue),
   ('space-cadet', $space-cadet),
   ('charcoal', $charcoal);
 
-@mixin build-colors() {
-  @each $colorName, $color in $colors {
-    .#{$colorName} {
-      color: $color;
-    }
-    .bg-#{$colorName} {
-      background-color: $color;
-    }
-    .border-#{$colorName} {
-      border-color: $color;
-    }
+@each $colorName, $color in $colors {
+  .#{$colorName} {
+    color: $color;
   }
-
+  .bg-#{$colorName} {
+    background-color: $color;
+  }
+  .border-#{$colorName} {
+    border-color: $color;
+  }
+  // --- Darker ---
+  $darker: darken($color, 10%);
+  .#{$colorName}-dark {
+    color: $darker;
+  }
+  .bg-#{$colorName}-dark {
+    background-color: $darker;
+  }
+  .border-#{$colorName}-dark {
+    border-color: $darker;
+  }
+  // --- Lighter ---
+  $lighter: lighten($color, 10%);
+  .#{$colorName}-light {
+    color: $lighter;
+  }
+  .bg-#{$colorName}-light {
+    background-color: $lighter;
+  }
+  .border-#{$colorName}-light {
+    border-color: $lighter;
+  }
 }

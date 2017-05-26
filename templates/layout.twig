@@ -8,13 +8,14 @@
     <title>{{ page_title }}</title>
     <link rel="stylesheet" href="https://unpkg.com/ace-css/css/ace.min.css">
     <link rel="stylesheet" href="https://unpkg.com/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/public/css/style.css">
-    {% block styles %}{% endblock %}
+    {% block styles %}
+        <link rel="stylesheet" href="/public/css/style.css">
+    {% endblock %}
 </head>
-<body class="{{ body_class }}">
+<body{% if body_class is defined %} class="{{ body_class }}"{% endif %}>
 {% block content %}{% endblock %}
-<script type="application/javascript" src="https://unpkg.com/jquery"></script>
 {% block scripts %}
+    <script type="application/javascript" src="https://unpkg.com/jquery"></script>
 {% endblock %}
 </body>
 </html>

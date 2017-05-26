@@ -8,17 +8,18 @@
 namespace Topazz\Controller;
 
 
-use Psr\Container\ContainerInterface;
-use Slim\Views\Twig;
+use Topazz\Container;
+use Topazz\View\Renderer;
 
 class Controller {
 
+    /** @var Container $container */
     protected $container;
-    /** @var Twig $view */
+    /** @var Renderer $view */
     protected $view;
 
-    public function __construct(ContainerInterface $container) {
+    public function __construct(Container $container) {
         $this->container = $container;
-        $this->view = $container->get('view');
+        $this->view = $container->renderer();
     }
 }

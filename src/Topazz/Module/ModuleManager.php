@@ -21,7 +21,18 @@ class ModuleManager {
     public function __construct(Container $container) {
         $this->container = $container;
         $this->registeredModules[] = new InstallerModule();
-        $this->registeredModules = array_merge($this->registeredModules, Module::all()->toArray());
+        if (getenv("ENV") !== "installation") {
+            $this->registeredModules = array_merge($this->registeredModules, Module::all()->toArray());
+        }
+    }
+
+    public function findModule(string $moduleName) {
+        foreach ($this->registeredModules as $module) {
+            if ($module->name === $moduleName) {
+                return $module;
+            }
+        }
+        return null;
     }
 
     public function run() {

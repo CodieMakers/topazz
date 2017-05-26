@@ -8,7 +8,9 @@
 namespace Topazz\Database;
 
 
+use PDO;
 use Topazz\Application;
+use Topazz\Data\Collection;
 
 abstract class Entity {
 
@@ -28,21 +30,19 @@ abstract class Entity {
     }
 
     public static function all() {
-        return self::db()->query(
-            Query::create("SELECT * FROM " . static::getTable()->getName())
-        )->run(static::class)->all();
+        return self::db()->connect()->select()->from(static::getTable()->getName())->execute()->all();
     }
 
-    public static function findBy($key, $value) {
-        return self::db()->query(
-            Query::create(
-                "SELECT * FROM " . static::getTable()->getName() . " WHERE $key = ?"
-            )->setAttributes([$value])
-        )->run(static::class)->all();
+    public static function findBy($key, $operator, $value) {
+        $select = self::db()->select()
+            ->from(static::getTable()->getName())
+            ->where($key, $operator, $value);
+        $result = $select->execute();
+        return new Collection($result->fetchAll());
     }
 
     public static function findById(int $id) {
-        return self::findBy("id", $id)->first();
+        return self::findBy("id", "=", $id)->first();
     }
 
     abstract public static function getTable(): Table;

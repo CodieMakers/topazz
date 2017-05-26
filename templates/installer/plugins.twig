@@ -1,0 +1,40 @@
+{% extends "@installer/layout.twig" %}
+
+{% block content %}
+    <form action="/install-plugins" method="post" autocomplete="off">
+        <section class="card m4">
+            <h1><i class="fa fa-puzzle-piece"></i>Recommended plugins</h1>
+            <table class="hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Install</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for plugin in plugins %}
+                    <tr>
+                        <td>{{ plugin.name }}</td>
+                        <td>{{ plugin.description }}</td>
+                        <td>
+                            <div class="checkbox toggle">
+                                <input type="checkbox" id="plugin-{{ plugin.id }}" name="plugins[{{ plugin.id }}]"/>
+                                <label for="plugin-{{ plugin.id }}"></label>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <article class="card-body clearfix">
+                <div class="flex items-center justify-end">
+                    <a href="/install-plugins-skip" class="text-decoration-none moonstone-blue h6 mr3">Skip</a>
+                    <button type="submit" class="btn btn-primary bg-moonstone-blue white btn-big loading">
+                        <i class="fa fa-save mr1"></i>Install plugins
+                    </button>
+                </div>
+            </article>
+        </section>
+    </form>
+{% endblock %}

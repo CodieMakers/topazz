@@ -8,14 +8,20 @@
 namespace Topazz\Database;
 
 
+use Topazz\Application;
+use Topazz\Data\RandomStringGenerator;
+
 class Table {
 
     protected $columns;
     protected $name;
+    /** @var Connector $db */
+    private $db;
 
     public function __construct(string $name, array $columns) {
         $this->name = $name;
         $this->columns = $columns;
+        $this->db = Application::getInstance()->getContainer()->get('db');
     }
 
     /**
@@ -36,28 +42,7 @@ class Table {
         return $this->name;
     }
 
-    private function parseColumnOptions($options) {
-        $column = $options["type"];
-        if ($options["type"] == "SERIAL") { //don't continue
-            return $column;
-        }
-        if (isset($options["primary"]) && $options["primary"]) {
-            $column .= " PRIMARY KEY";
-        }
-        if (isset($options["unique"]) && $options["unique"]) {
-            $column .= " UNIQUE";
-        }
-        if (isset($options["default"])) {
-            $column .= " DEFAULT " . $options["default"];
-        }
-        return $column;
-    }
-
-    public function getColumnsForTableCreation() {
-        $columns = [];
-        foreach ($this->columns as $column => $options) {
-            $columns[$column] = $this->parseColumnOptions($options);
-        }
-        return $columns;
+    public function getCreateTableStatement() {
+        return $this->db->createTable($this->name)->columns($this->columns);
     }
 }

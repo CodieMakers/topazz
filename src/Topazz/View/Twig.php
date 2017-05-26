@@ -21,7 +21,8 @@ class Twig extends TwigView {
         parent::__construct("templates", $settings);
         $this->addExtension(new TwigExtension($container['router'], $basePath));
         $this->addExtension(new TwigCsrfExtension($container->get('csrf'), $container->get('request')));
-        $this->addExtension(new TwigMessages($container['flash']));
+        $this->addExtension(new TwigMessages($container->flash()));
+        $this->addExtension(new TopazzModuleTwigExtension($container));
     }
 
     public function withRequest(Request $request) {

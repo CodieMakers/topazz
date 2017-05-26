@@ -12,14 +12,13 @@ use Traversable;
 
 class Collection implements \IteratorAggregate {
 
-    private $items = [];
-    private $index = 0;
+    protected $items = [];
 
-    public function __construct($items = []) {
+    public function __construct(array $items = []) {
         $this->items = $items;
     }
 
-    public function get(int $index) {
+    public function get($index) {
         return new Optional($this->items[$index]);
     }
 
@@ -39,6 +38,10 @@ class Collection implements \IteratorAggregate {
         return $this->items;
     }
 
+    public function join($glue) {
+        return join($glue, $this->items);
+    }
+
     public function forEach (callable $callable) {
         foreach ($this->items as $index => $item) {
             call_user_func($callable, $item, $index);
@@ -47,15 +50,23 @@ class Collection implements \IteratorAggregate {
     }
 
     public function map(callable $mapper) {
-        foreach ($this->items as $index => $item) {
-            $this->items[$index] = call_user_func($mapper, $item, $index);
+        $clone = clone $this;
+        foreach ($clone->items as $index => $item) {
+            $clone->items[$index] = call_user_func($mapper, $item, $index);
         }
-        return $this;
+        return $clone;
     }
 
     public function filter(callable $filter) {
-        $this->items = array_filter($this->items, $filter, ARRAY_FILTER_USE_BOTH);
-        return $this;
+        $clone = clone $this;
+        $clone->items = array_filter($clone->items, $filter, ARRAY_FILTER_USE_BOTH);
+        return $clone;
+    }
+
+    public function filterEmpty() {
+        return $this->filter(function ($item) {
+            return !is_null($item) && ((!is_array($item) && !empty($item)) || is_array($item));
+        });
     }
 
     public function put($value) {
@@ -66,6 +77,66 @@ class Collection implements \IteratorAggregate {
         foreach ($array as $value) {
             $this->put($value);
         }
+    }
+
+    public function contains($key) {
+        return !$this->isEmpty() && in_array($key, $this->items, true);
+    }
+
+    /**
+     * @param \Iterator|array $keys
+     * @param bool            $strict
+     *
+     * @return bool
+     */
+    public function containsAll($keys) {
+        foreach ($keys as $key) {
+            if (!$this->contains($key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param \Iterator|array $keys
+     * @param bool            $strict
+     *
+     * @return bool
+     */
+    public function containsAny($keys) {
+        foreach ($keys as $key) {
+            if ($this->contains($key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function hasKey($key) {
+        return !$this->isEmpty() && array_key_exists($key, $this->items);
+    }
+
+    public function hasAllKeys($keys) {
+        foreach ($keys as $key) {
+            if (!$this->hasKey($key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function hasAnyKey($keys) {
+        foreach ($keys as $key) {
+            if ($this->hasKey($key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function isEmpty() {
+        return $this->length() == 0;
     }
 
     /**

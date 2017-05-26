@@ -19,10 +19,9 @@ body {
 @import "form";
 @import "table";
 @import "card";
+@import "bottom-panel";
 @import "login";
 @import "admin";
-
-@include build-colors();
 
 .h0 {
   font-size: 5rem;

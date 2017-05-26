@@ -23,58 +23,36 @@ use Topazz\View\Twig;
 class Application extends App {
 
     private static $instance;
+    /** @var Container $container */
     private $container;
+    /** @var Dotenv $environment */
+    private $environment;
 
     public function __construct() {
         self::$instance = $this;
-        (new Dotenv())->load(".env");
+        $this->environment = new Dotenv();
+        if (file_exists(".env")) {
+            $this->environment->load(".env");
+        } else {
+            $this->environment->populate(["ENV" => "installation"]);
+        }
         $this->container = new Container(['settings' => [
             'determineRouteBeforeAppMiddleware' => true,
-            'displayErrorDetails' => !$this->isProduction()
+            'displayErrorDetails' => !self::isProduction()
         ]]);
         session_start();
-        $this->container['logger'] = function ($container) {
-            $logger = new Logger("Topazz");
-            if (getenv("ENV") != "production") {
-                $logger->pushHandler(new StreamHandler("php://stdout", Logger::DEBUG));
-            }
-            $logger->pushHandler(new RotatingFileHandler("storage/log/app.log", 5, Logger::CRITICAL));
-            return $logger;
-        };
-        $this->container['flash'] = function ($container) {
-            return new Messages();
-        };
-        $this->container['csrf'] = function ($container) {
-            return new Guard();
-        };
-        $this->container['view'] = function ($container) {
-            return new Twig($container, [
-                'cache' => false
-            ]);
-        };
-        $this->container["db"] = function ($container) {
-            return new Connector();
-        };
-        if ($this->isProduction()) {
-            $this->container['notFoundHandler'] = function ($container) {
+        if (self::isProduction()) {
+            $this->container['notFoundHandler'] = function (Container $container) {
                 return function ($request, $response) use ($container) {
-                    return $container->get('view')->render($response, "error/404.twig");
+                    return $container->renderer()->render($request, $response, "error/404.twig");
                 };
             };
-            $this->container['errorHandler'] = function ($container) {
+            $this->container['errorHandler'] = function (Container $container) {
                 return function ($request, $response) use ($container) {
-                    return $container->get('view')->render($response, "error/exception.twig");
+                    return $container->renderer()->render($request, $response, "error/exception.twig");
                 };
             };
-        } else {
-            setcookie("XDEBUG_SESSION", "13011");
-//            $this->add(function (Request $request, Response $response, $next) {
-//                return $next($request, $response->withHeader(
-//                    "Set-Cookie", "XDEBUG_SESSION=13011;"
-//                ));
-//            });
         }
-
         parent::__construct($this->container);
     }
 
@@ -85,24 +63,20 @@ class Application extends App {
         return self::$instance;
     }
 
-    public function isProduction() {
+    public static function isProduction() {
         return getenv("ENV") == "production";
     }
 
-    /**
-     * @param bool $silent
-     *
-     * @return void
-     */
     public function run($silent = false) {
-        $this->getContainer()->getModuleManager()->run();
+        $this->container->moduleManager()->run();
         parent::run($silent);
     }
 
-    /**
-     * @return Container
-     */
     public function getContainer() {
         return $this->container;
+    }
+
+    public function getEnvironmentLoader() {
+        return $this->environment;
     }
 }

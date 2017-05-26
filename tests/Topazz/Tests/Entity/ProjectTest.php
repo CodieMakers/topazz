@@ -21,8 +21,4 @@ class ProjectTest extends TestCase {
         $page = new Page();
         $page->uri = "/";
     }
-
-    public function testPages() {
-
-    }
 }

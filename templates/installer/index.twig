@@ -1,9 +1,98 @@
-{% extends "layout.twig" %}
-
-{% block styles %}
-    <link rel="stylesheet" href="/public/css/installer.css">
-{% endblock %}
+{% extends "@installer/layout.twig" %}
 
 {% block content %}
-    <section id="installer"></section>
+    <form action="/install" method="post">
+        <section id="installer" class="card m4">
+            <h1><i class="fa fa-save"></i>Topazz installation</h1>
+            <article class="card-body">
+                <p>
+                    For continuing this installation we need some information about the environment you are running
+                    Topazz
+                    on.<br>
+                    Please, fill in the following form to proceed.
+                </p>
+            </article>
+            {% set error = flash('error') %}
+            {% if error is defined and error is not empty %}
+                <article class="card-body bg-golden-gate-light white clearfix">
+                    <h3 class="my1">
+                        <i class="fa fa-warning mr2"></i>{{ error[0] }}
+                    </h3>
+                </article>
+            {% endif %}
+            <article class="card-body clearfix">
+                <h2 class="my1 mb3"><i class="fa fa-table mr2"></i>Database</h2>
+                <div class="clearfix flex items-baseline mb3">
+                    <label class="label mr2 h3 col-3" for="db-host">Host:</label>
+                    <input type="text" id="db-host" name="db-host" class="input col-4"
+                           placeholder="e.g. localhost" value="{{ db_host }}"/>
+                </div>
+                <div class="clearfix flex items-baseline mb3">
+                    <label class="label mr2 h3 col-3 required" for="db-name">Database name:</label>
+                    <input type="text" id="db-name" name="db-name" class="input col-4" required
+                           placeholder="e.g. topazz" value="{{ db_name }}"/>
+                </div>
+                <div class="clearfix flex items-baseline mb3">
+                    <label class="label mr2 h3 col-3 required" for="db-user">User:</label>
+                    <input type="text" id="db-user" name="db-user" class="input col-4" required
+                           placeholder="e.g. root" value="{{ db_user }}"/>
+                    <i class="fa fa-question ml2 cursor-pointer"
+                       title="This user has to have permission for creating tables."></i>
+                </div>
+                <div class="clearfix flex items-baseline">
+                    <label class="label mr2 h3 col-3 required" for="db-password">Password:</label>
+                    <input type="password" id="db-password" name="db-password" class="input col-4" required
+                           value="{{ db_password }}"/>
+                    <i class="fa fa-eye ml2 cursor-pointer password-reveal" data-password="db-password"
+                       title="Show password"></i>
+                </div>
+            </article>
+
+            <article class="card-body clearfix">
+                <h2 class="my1 mb3"><i class="fa fa-dashboard mr2"></i>Administration</h2>
+                <p class="mb3">
+                    For better security, it is recommended to set the default endpoint for administration as well as the
+                    base host.<br>
+                    We also need you to setup an administrator account.<br>
+                    <small>Hint: You can also provide an IP restriction.</small>
+                </p>
+                <div class="clearfix flex items-baseline mb3">
+                    <label for="admin-base" class="label mr2 h3 col-3">Base host:</label>
+                    <input type="text" id="admin-base" name="admin-base" class="input col-4"
+                           placeholder="e.g. admin.example.com" value="{{ admin_base }}"/>
+                </div>
+                <div class="clearfix flex items-baseline mb3">
+                    <label for="admin-uri" class="label mr2 h3 col-3">Endpoint:</label>
+                    <input type="text" id="admin-uri" name="admin-uri" class="input col-4"
+                           placeholder="e.g. /admin" value="{{ admin_uri }}"/>
+                </div>
+                <div class="clearfix flex items-baseline mb3">
+                    <label for="admin-username" class="label mr2 h3 col-3 required">Admin username:</label>
+                    <input type="text" id="admin-username" name="admin-username" class="input col-4" required
+                           placeholder="e.g. administrator" value="{{ admin_username }}"/>
+                </div>
+                <div class="clearfix flex items-baseline mb3">
+                    <label for="admin-password" class="label mr2 h3 col-3 required">Admin password:</label>
+                    <input type="password" id="admin-password" name="admin-password" class="input col-4" required
+                           value="{{ admin_password }}"/>
+                    <i class="fa fa-eye ml2 cursor-pointer password-reveal" data-password="admin-password"
+                       title="Show password"></i>
+                </div>
+                <div class="clearfix flex items-baseline">
+                    <label for="admin-ip-restriction" class="label mr2 col-3">IP restriction: (optional)</label>
+                    <input type="text" id="admin-ip-restriction" name="admin-ip-restriction" class="input col-4"
+                           placeholder="e.g. 192.168.1.1" value="{{ admin_ip_restriction }}"
+                           pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
+                </div>
+            </article>
+
+            <div class="card-body clearfix">
+                <div class="right">
+                    <button type="submit" class="btn btn-primary btn-big bg-moonstone-blue loading">
+                        <i class="fa fa-save mr1"></i>Install
+                    </button>
+                </div>
+            </div>
+        </section>
+    </form>
 {% endblock %}

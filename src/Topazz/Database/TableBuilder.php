@@ -46,6 +46,18 @@ class TableBuilder {
         ]);
     }
 
+    public function text(string $column): TableBuilder {
+        return $this->addColumn($column, "TEXT");
+    }
+
+    public function timestamp(string $column): TableBuilder {
+        return $this->addColumn($column, "TIMESTAMP");
+    }
+
+    public function boolen(string $column): TableBuilder {
+        return $this->addColumn($column, "BOOLEAN");
+    }
+
     /**
      * @param string       $column  Column name
      * @param array|string $options Options or just data type
@@ -87,6 +99,12 @@ class TableBuilder {
     public function foreignKey(string $table, string $reference): TableBuilder {
         return $this->alterCurrentColumn([
             "foreign" => $table . ":" . $reference
+        ]);
+    }
+
+    public function check(string $check): TableBuilder {
+        return $this->alterCurrentColumn([
+            "check" => $check
         ]);
     }
 

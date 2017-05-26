@@ -8,18 +8,15 @@
 namespace Topazz\Middleware;
 
 
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class BodyClassMiddleware {
 
-    private $bodyClass;
-
-    public function __construct(string $bodyClass) {
-        $this->bodyClass = $bodyClass;
-    }
-
-    public function __invoke(Request $request, Response $response, callable $next): Response {
-        return $next($request->withAttribute("body_class", $this->bodyClass), $response);
+    public static function withClass(string $class) {
+        return function (Request $request, Response $response, callable $next) use ($class): ResponseInterface {
+            return $next($request->withAttribute("body_class", $class), $response);
+        };
     }
 }
