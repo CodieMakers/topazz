@@ -9,51 +9,59 @@ namespace Topazz\Entity;
 
 
 use Slim\Http\Uri;
-use Topazz\Database\Proxy\SingleToManyProxy;
-use Topazz\Database\Table;
-use Topazz\Database\TableBuilder;
-use Topazz\Theme\Theme;
+use Topazz\Data\Optional;
+use Topazz\Database\Database;
+use Topazz\Database\Proxy\Proxy;
+use Topazz\Database\Table\Column;
+use Topazz\Database\Table\Table;
 
 class Project extends ContentEntity {
 
+    public $id;
     public $name;
     public $uri;
     protected $theme_id;
-    public $theme;
-    public $pages;
-    public $authors;
 
-    public function __construct() {
-        parent::__construct("users_has_projects");
-        $this->pages = new SingleToManyProxy(
-            "pages",
-            "project_id",
-            $this->id,
-            Page::class
-        );
-        $this->theme = Theme::findById($this->theme_id)->orNull();
+    public function getCurrentPage(Uri $uri): Optional {
+        return $this->pages()->fetch()->filter(function (Page $page) use ($uri) {
+            return $page->uri === $uri->getPath();
+        })->first();
     }
 
-    public function getCurrentPage(Uri $uri) {
-        return $this->pages->all()->filter(function (Page $page) use ($uri) {
-            return $page->uri === $uri->getPath();
-        });
+    public function authors(): Proxy {
+        return new Proxy(
+            Database::select()->from('users')->whereIn('id',
+                Database::select('user_id')->distinct()
+                    ->from('users_has_projects')
+                    ->where('project_id', '=', $this->id)
+            ), User::class
+        );
+    }
+
+    public function pages(): Proxy {
+        return new Proxy(
+            Database::select()->from('pages')
+                ->where('project_id', '=', $this->id),
+            Page::class
+        );
     }
 
     public static function getTable(): Table {
-        return (new TableBuilder("projects"))
-            ->serial("id")
-            ->varchar("name", 45)->notNull()
-            ->varchar("uri")->notNull()->default($_SERVER["HTTP_HOST"])
-            ->integer("theme_id", TableBuilder::BIGINT)->foreignKey("themes", "id")
-            ->create();
+        return Table::create("projects")->addColumns(
+            Column::id(),
+            Column::create("name")->type("VARCHAR(255)")->notNull()
+        );
     }
 
-    public static function findByUri(Uri $uri) {
-        return self::findBy("uri", $uri->getHost());
+    public function create() {
+        // TODO: Implement create() method.
     }
 
-    public function save() {
-        // TODO: Implement save() method.
+    public function update() {
+        // TODO: Implement update() method.
+    }
+
+    public function remove() {
+        // TODO: Implement remove() method.
     }
 }

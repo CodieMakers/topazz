@@ -8,9 +8,7 @@
 namespace Topazz\Database\Proxy;
 
 
-use Topazz\Application;
 use Topazz\Database\Connector;
-use Topazz\Database\Query;
 use Topazz\Database\Statement\Statement;
 
 class Proxy implements \IteratorAggregate {
@@ -19,16 +17,19 @@ class Proxy implements \IteratorAggregate {
     private $statement;
     private $entityClass;
 
-    public function __construct(Statement $statement, string $entityClass) {
+    public function __construct(Statement $statement, string $entityClass = \stdClass::class) {
         $this->statement = $statement;
         $this->entityClass = $entityClass;
     }
 
-    public function all() {
-        return $this->statement->execute()->all();
+    public function fetch() {
+        return Connector::connect()
+            ->setEntity($this->entityClass)
+            ->setStatement($this->statement)
+            ->execute()->all();
     }
 
     public function getIterator() {
-        return $this->all()->getIterator();
+        return $this->fetch()->getIterator();
     }
 }

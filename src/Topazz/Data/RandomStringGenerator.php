@@ -14,7 +14,10 @@ class RandomStringGenerator {
 
     public static function generate(int $length) {
         if (is_null(self::$alphabet)) {
-            self::defaultAlphabet();
+            self::$alphabet = implode(range('a', 'z')) .
+                implode(range('A', 'Z')) .
+                implode(range(0, 9)) .
+                '$&@.,+-=_!?';
         }
         $string = "";
         for ($i = 0; $i < $length; $i++) {
@@ -23,16 +26,12 @@ class RandomStringGenerator {
         return $string;
     }
 
-    public static function withoutSpecials() {
+    public static function withoutSpecials(int $length) {
         self::$alphabet = implode(range('a', 'z')) .
             implode(range('A', 'Z')) .
             implode(range(0,9));
-    }
-
-    public static function defaultAlphabet() {
-        self::$alphabet = implode(range('a', 'z')) .
-            implode(range('A', 'Z')) .
-            implode(range(0, 9)) .
-            '$&@.,+-=_!?';
+        $result = self::generate($length);
+        self::$alphabet = null;
+        return $result;
     }
 }

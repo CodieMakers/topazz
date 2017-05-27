@@ -8,29 +8,19 @@
 namespace Topazz\Database\Statement;
 
 
-use Topazz\Database\Database;
-use Topazz\Database\Result;
+use Topazz\Data\Collection;
 
 abstract class Statement {
 
-    protected $connection;
     protected $values;
-    protected $entity;
 
-    public function __construct(Database $connection) {
-        $this->connection = $connection;
+    public function __construct() {
+        $this->values = new Collection();
     }
 
-    public function setEntity(string $entity) {
-        $this->entity = $entity;
-        return $this;
-    }
+    abstract public function getQueryString(): string;
 
-    public function execute() {
-        $statement = $this->connection->prepare((string)$this);
-        $statement->execute($this->values);
-        return new Result($statement);
+    public function getValues(): array {
+        return $this->values->toArray();
     }
-
-    abstract public function __toString(): string;
 }

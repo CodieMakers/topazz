@@ -19,7 +19,7 @@ class UserController extends Controller {
 
     public function index(Request $request, Response $response) {
         $users = User::all();
-        return $this->view->withRequest($request)->render($response, "admin/user/index.twig", ["users" => $users]);
+        return $this->renderer->withRequest($request)->render($response, "admin/user/index.twig", ["users" => $users]);
     }
 
     public function detail(Request $request, Response $response, array $args): ResponseInterface {
@@ -28,7 +28,7 @@ class UserController extends Controller {
         } catch (\Exception $exception) {
             return $response->withStatus(404);
         }
-        return $this->view->withRequest($request)->render($response, "admin/user/detail.twig", ["user" => $user]);
+        return $this->renderer->withRequest($request)->render($response, "admin/user/detail.twig", ["user" => $user]);
     }
 
     public function saveDetail(Request $request, Response $response, array $args): ResponseInterface {

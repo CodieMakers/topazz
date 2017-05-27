@@ -18,13 +18,13 @@ class AuthController extends Controller {
 
     public function login(Request $request, Response $response) {
         if ($request->isGet()) {
-            return $this->view->render($response, "admin/login.twig");
+            return $this->renderer->render($response, "admin/login.twig");
         }
         $uri = $request->getQueryParam("return_url");
         /** @var Optional $user */
         $user = User::findBy("username", $request->getParsedBodyParam("username"))->first();
         if ($user->isNull()) {
-            return $this->view->render($response, "admin/login.twig", [
+            return $this->renderer->render($response, "admin/login.twig", [
                 "error_type" => "user_not_found",
                 "username" => $request->getParsedBodyParam("username"),
                 "remember-me" => $request->getParsedBodyParam("remember-me")
@@ -33,7 +33,7 @@ class AuthController extends Controller {
         $user = $user->orNull(); //there cannot be null
         /** @var User $user */
         if (!$user->matchPassword($request->getParsedBodyParam("password"))) {
-            return $this->view->render($response, "admin/login.twig", [
+            return $this->renderer->render($response, "admin/login.twig", [
                 "error_type" => "wrong_password",
                 "username" => $request->getParsedBodyParam("username"),
                 "remember-me" => $request->getParsedBodyParam("remember-me")

@@ -42,6 +42,10 @@ class Collection implements \IteratorAggregate {
         return join($glue, $this->items);
     }
 
+    public function clear() {
+        $this->items = [];
+    }
+
     public function forEach (callable $callable) {
         foreach ($this->items as $index => $item) {
             call_user_func($callable, $item, $index);
@@ -69,14 +73,22 @@ class Collection implements \IteratorAggregate {
         });
     }
 
+    public function find($key) {
+        return new Optional($this->items[$key]);
+    }
+
     public function put($value) {
         $this->items[] = $value;
     }
 
-    public function putAll(Traversable $array) {
+    public function putAll($array) {
         foreach ($array as $value) {
             $this->put($value);
         }
+    }
+
+    public function keys() {
+        return array_keys($this->items);
     }
 
     public function contains($key) {

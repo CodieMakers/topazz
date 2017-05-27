@@ -5,19 +5,12 @@
  * @package Topazz
  */
 
-namespace Topazz\View;
+namespace Topazz\View\Extension;
 
 
-use Topazz\Container;
 use Topazz\Module\ModuleManager;
 
-class TopazzModuleTwigExtension extends \Twig_Extension {
-
-    private $container;
-
-    public function __construct(Container $container) {
-        $this->container = $container;
-    }
+class ModulesExtension extends \Twig_Extension {
 
     public function getFunctions() {
         return [
@@ -32,9 +25,9 @@ class TopazzModuleTwigExtension extends \Twig_Extension {
      * @throws \Twig_Error_Runtime
      */
     public function getModulePath(string $moduleName) {
-        $module = $this->moduleManager->findModule($moduleName);
+        $module = ModuleManager::getInstance()->findModule($moduleName);
         if (is_null($module)) {
-            throw new \Twig_Error_Runtime(sprintf("There is no such a module like %s", $moduleName));
+            throw new \Twig_Error_Runtime(sprintf("There is no such a module like '%s'", $moduleName));
         }
         return "/modules/" . $module->name . "/";
     }

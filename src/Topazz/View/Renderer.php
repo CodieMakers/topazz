@@ -10,17 +10,48 @@ namespace Topazz\View;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Topazz\Container;
+use Topazz\Environment;
+use Topazz\View\Extension\ModulesExtension;
+use Topazz\View\Extension\ParsedownExtension;
+use Topazz\View\Extension\SecurityExtension;
 
 class Renderer {
 
-    protected $view;
+    private static $instance;
+    protected $twig;
+    protected $templateLoader;
+    protected $defaultData = [];
 
-    public function __construct(Container $container) {
-        $this->view = $container->get('view');
+    protected function __construct() {
+        $this->templateLoader = new \Twig_Loader_Filesystem("templates");
+        $this->twig = new \Twig_Environment($this->templateLoader, [
+            'cache' => Environment::isProduction() ? getcwd() . "/storage/cache/twig" : false
+        ]);
+        $this->twig->addExtension(new ModulesExtension());
+        $this->twig->addExtension(new SecurityExtension());
+        $this->twig->addExtension(new ParsedownExtension());
     }
 
-    public function render(Request $request, Response $response, string $template, $data = []) {
-        return $this->view->withRequest($request)->render($response, $template, $data);
+    public function registerTemplateDir(string $templateDir, string $namespace = null) {
+        $this->templateLoader->addPath($templateDir, $namespace);
+    }
+
+    public function addExtension(\Twig_Extension $extension) {
+        $this->twig->addExtension($extension);
+    }
+
+    public function render(Request $request, Response $response, string $template, $data = []): Response {
+        $this->defaultData = array_merge($this->defaultData, $request->getAttributes());
+        $response = $response->write(
+            $this->twig->render($template, array_merge($this->defaultData, $data))
+        );
+        return $response->withStatus(200);
+    }
+
+    public static function getInstance() {
+        if (is_null(self::$instance)) {
+            self::$instance = new Renderer();
+        }
+        return self::$instance;
     }
 }

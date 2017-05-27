@@ -8,10 +8,8 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Database\Entity;
-use Topazz\Database\Query;
-use Topazz\Database\Table;
-use Topazz\Database\TableBuilder;
+use Topazz\Database\Table\Column;
+use Topazz\Database\Table\Table;
 
 class User extends Entity {
 
@@ -26,6 +24,7 @@ class User extends Entity {
         self::ROLE_BLOGGER => []
     ];
 
+    public $id;
     public $username;
     public $email;
     public $role = self::ROLE_BLOGGER;
@@ -35,7 +34,6 @@ class User extends Entity {
     private $password;
 
     public function __construct() {
-        parent::__construct();
         self::fetchPermissions();
     }
 
@@ -54,52 +52,32 @@ class User extends Entity {
         return in_array($permission, self::$permissions[$this->role]);
     }
 
-    public function save() {
-        if (is_null($this->id)) {
-            $this->id = $this->db->query(
-                Query::create(
-                    "INSERT INTO users " .
-                    "(username, email, role, first_name, last_name, password) " .
-                    "VALUES (?, ?, ?, ?, ?, ?)"
-                )->setAttributes([
-                    $this->username,
-                    $this->email,
-                    $this->role,
-                    $this->first_name,
-                    $this->last_name,
-                    $this->password
-                ])
-            )->run(self::class)->insertedId();
-        } else {
-            $this->db->query(
-                Query::create(
-                    "UPDATE users " .
-                    "SET email = ?, role = ?, first_name = ?, last_name = ?, password = ? " .
-                    "WHERE id = ?"
-                )->setAttributes([
-                    $this->email,
-                    $this->role,
-                    $this->first_name,
-                    $this->last_name,
-                    $this->password
-                ])->addAttribute($this->id)
-            )->run(self::class);
-        }
-    }
-
     public static function getTable(): Table {
-        return (new TableBuilder("users"))
-            ->serial("id")
-            ->varchar("username", 40)->notNull()->unique()
-            ->varchar("email", 50)->notNull()
-            ->varchar("password", 50)->notNull()
-            ->integer("role", TableBuilder::SMALLINT)->notNull()->unsigned()->default(User::ROLE_BLOGGER)
-            ->varchar("first_name", 50)
-            ->varchar("last_name", 50)
-            ->create();
+        return Table::create("users")->addColumns(
+            Column::id(),
+            Column::create("username")->type("VARCHAR(50)")->unique()->notNull(),
+            Column::create("password")->type("VARCHAR(255)")->notNull(),
+            Column::create("email")->type("VARCHAR(50)")->unique()->notNull(),
+            Column::create("role")->type("INTEGER(3)")->unsigned()->notNull()->default(self::ROLE_BLOGGER),
+            Column::create("first_name")->type("VARCHAR(50)"),
+            Column::create("last_name")->type("VARCHAR(50)"),
+            Column::create("profile_picture")->type("VARCHAR(255)")->default("/public/img/profile.png")
+        );
     }
 
     protected static function fetchPermissions() {
         // TODO: implement
+    }
+
+    public function create() {
+        // TODO: Implement create() method.
+    }
+
+    public function update() {
+        // TODO: Implement update() method.
+    }
+
+    public function remove() {
+        // TODO: Implement remove() method.
     }
 }

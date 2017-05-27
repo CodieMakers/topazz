@@ -27,6 +27,11 @@ class Result {
         return $this->statement->fetch();
     }
 
+    public function raw() {
+        $this->statement->setFetchMode(\PDO::FETCH_ASSOC);
+        return $this->statement->fetchAll();
+    }
+
     public function count() {
         return $this->statement->rowCount();
     }

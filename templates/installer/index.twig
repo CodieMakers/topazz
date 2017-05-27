@@ -1,7 +1,7 @@
 {% extends "@installer/layout.twig" %}
 
 {% block content %}
-    <form action="/install" method="post">
+    <form action="/install/database" method="post">
         <section id="installer" class="card m4">
             <h1><i class="fa fa-save"></i>Topazz installation</h1>
             <article class="card-body">
@@ -48,48 +48,10 @@
                 </div>
             </article>
 
-            <article class="card-body clearfix">
-                <h2 class="my1 mb3"><i class="fa fa-dashboard mr2"></i>Administration</h2>
-                <p class="mb3">
-                    For better security, it is recommended to set the default endpoint for administration as well as the
-                    base host.<br>
-                    We also need you to setup an administrator account.<br>
-                    <small>Hint: You can also provide an IP restriction.</small>
-                </p>
-                <div class="clearfix flex items-baseline mb3">
-                    <label for="admin-base" class="label mr2 h3 col-3">Base host:</label>
-                    <input type="text" id="admin-base" name="admin-base" class="input col-4"
-                           placeholder="e.g. admin.example.com" value="{{ admin_base }}"/>
-                </div>
-                <div class="clearfix flex items-baseline mb3">
-                    <label for="admin-uri" class="label mr2 h3 col-3">Endpoint:</label>
-                    <input type="text" id="admin-uri" name="admin-uri" class="input col-4"
-                           placeholder="e.g. /admin" value="{{ admin_uri }}"/>
-                </div>
-                <div class="clearfix flex items-baseline mb3">
-                    <label for="admin-username" class="label mr2 h3 col-3 required">Admin username:</label>
-                    <input type="text" id="admin-username" name="admin-username" class="input col-4" required
-                           placeholder="e.g. administrator" value="{{ admin_username }}"/>
-                </div>
-                <div class="clearfix flex items-baseline mb3">
-                    <label for="admin-password" class="label mr2 h3 col-3 required">Admin password:</label>
-                    <input type="password" id="admin-password" name="admin-password" class="input col-4" required
-                           value="{{ admin_password }}"/>
-                    <i class="fa fa-eye ml2 cursor-pointer password-reveal" data-password="admin-password"
-                       title="Show password"></i>
-                </div>
-                <div class="clearfix flex items-baseline">
-                    <label for="admin-ip-restriction" class="label mr2 col-3">IP restriction: (optional)</label>
-                    <input type="text" id="admin-ip-restriction" name="admin-ip-restriction" class="input col-4"
-                           placeholder="e.g. 192.168.1.1" value="{{ admin_ip_restriction }}"
-                           pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
-                </div>
-            </article>
-
             <div class="card-body clearfix">
                 <div class="right">
                     <button type="submit" class="btn btn-primary btn-big bg-moonstone-blue loading">
-                        <i class="fa fa-save mr1"></i>Install
+                        <i class="fa fa-forward mr1"></i>Continue
                     </button>
                 </div>
             </div>

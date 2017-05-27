@@ -11,13 +11,14 @@ namespace Topazz\Admin\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Topazz\Environment;
 use Topazz\Middleware\MiddlewareInterface;
 
 class IpRestriction implements MiddlewareInterface {
 
 
     public function __invoke(Request $request, Response $response, callable $next): ResponseInterface {
-        $ipRestriction = getenv('ADMIN_IP_RESTRICTION');
+        $ipRestriction = Environment::get('ADMIN_IP_RESTRICTION');
         if (isset($ipRestriction)) {
 
         }

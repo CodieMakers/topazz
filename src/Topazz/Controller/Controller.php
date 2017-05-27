@@ -8,18 +8,18 @@
 namespace Topazz\Controller;
 
 
-use Topazz\Container;
+use Slim\Container;
 use Topazz\View\Renderer;
 
 class Controller {
 
     /** @var Container $container */
     protected $container;
-    /** @var Renderer $view */
-    protected $view;
+    /** @var Renderer $renderer */
+    protected $renderer;
 
     public function __construct(Container $container) {
         $this->container = $container;
-        $this->view = $container->renderer();
+        $this->renderer = Renderer::getInstance();
     }
 }

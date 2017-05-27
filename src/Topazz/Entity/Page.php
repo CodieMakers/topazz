@@ -8,32 +8,58 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Database\Table;
-use Topazz\Database\TableBuilder;
+use Topazz\Data\Collection;
+use Topazz\Database\Connector;
+use Topazz\Database\Database;
+use Topazz\Database\Proxy\Proxy;
+use Topazz\Database\Table\Column;
+use Topazz\Database\Table\Table;
 
 class Page extends ContentEntity {
 
+    public $id;
     public $name;
     public $title;
     public $uri = "/";
     public $layout;
 
     public function __construct() {
-        parent::__construct("users_has_pages");
+
     }
 
     public static function getTable(): Table {
-        return (new TableBuilder("pages"))
-            ->serial("id")
-            ->varchar("name", 50)->notNull()
-            ->varchar("title")->null()
-            ->integer("status", TableBuilder::TINYINT, 2)->default(self::STATUS_PUBLISHED)
-            ->varchar("uri")->notNull()->default("/")
-            ->integer("project_id", TableBuilder::BIGINT)->unsigned()->notNull()->foreignKey("projects", "id")
-            ->create();
+        return Table::create("pages")->addColumns(
+            Column::id()
+        );
     }
 
-    public function save() {
-        // TODO: Implement save() method.
+    public function authors(): Proxy {
+        return new Proxy(
+            Database::select()->from('users')->whereIn('id',
+                Database::select('user_id')->distinct()
+                    ->from('users_has_pages')
+                    ->where('page_id', '=', $this->id)
+            ), User::class
+        );
+    }
+
+    public function posts(): Proxy {
+        return new Proxy(
+            Database::select()->from('posts')
+                ->where('page_id', '=', $this->id),
+            Post::class
+        );
+    }
+
+    public function create() {
+        // TODO: Implement create() method.
+    }
+
+    public function update() {
+        // TODO: Implement update() method.
+    }
+
+    public function remove() {
+        // TODO: Implement remove() method.
     }
 }

@@ -8,9 +8,9 @@
 namespace Topazz\Admin\Controller;
 
 
+use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Topazz\Container;
 use Topazz\Controller\Controller;
 use Topazz\Module\ModuleInstaller;
 
@@ -25,7 +25,7 @@ class ModuleController extends Controller {
 
     public function modules(Request $request, Response $response) {
         $modules = $this->moduleInstaller->listModules();
-        return $this->view->withRequest($request)->render($response, "@admin/modules/index.twig", [
+        return $this->renderer->render($request, $response, "@admin/modules/index.twig", [
             "modules" => $modules
         ]);
     }

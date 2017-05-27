@@ -8,31 +8,32 @@
 namespace Topazz\Module;
 
 
-use Topazz\Container;
+use Psr\Container\ContainerInterface;
+use Topazz\Application;
+use Topazz\Data\Collection;
+use Topazz\Data\ObjectCollection;
+use Topazz\Environment;
 use Topazz\Installer\InstallerModule;
 
 class ModuleManager {
 
-    /** @var Container $container */
+    private static $instance;
+    /** @var ContainerInterface $container */
     private $container;
     /** @var Module[] $registeredModules */
     private $registeredModules = [];
 
-    public function __construct(Container $container) {
-        $this->container = $container;
-        $this->registeredModules[] = new InstallerModule();
-        if (getenv("ENV") !== "installation") {
-            $this->registeredModules = array_merge($this->registeredModules, Module::all()->toArray());
+    protected function __construct() {
+        $this->container = Application::getInstance()->getContainer();
+        $this->registeredModules = new ObjectCollection();
+        $this->registeredModules->put(new InstallerModule());
+        if (Environment::get("ENV") !== "installation") {
+            $this->registeredModules->putAll(Module::all());
         }
     }
 
     public function findModule(string $moduleName) {
-        foreach ($this->registeredModules as $module) {
-            if ($module->name === $moduleName) {
-                return $module;
-            }
-        }
-        return null;
+        return $this->registeredModules->find(["name" => $moduleName])->orNull();
     }
 
     public function run() {
@@ -42,5 +43,12 @@ class ModuleManager {
                 $module->setup();
             }
         }
+    }
+
+    public static function getInstance() {
+        if (is_null(self::$instance)) {
+            self::$instance = new ModuleManager();
+        }
+        return self::$instance;
     }
 }

@@ -8,9 +8,8 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Database\Entity;
+use Topazz\Data\Collection;
 use Topazz\Database\Proxy\Proxy;
-use Topazz\Database\Query;
 
 abstract class ContentEntity extends Entity {
 
@@ -18,28 +17,11 @@ abstract class ContentEntity extends Entity {
     const STATUS_PRIVATE = 1;
     const STATUS_FOR_REVIEW = 2;
 
-    public $status = self::STATUS_PUBLISHED;
-    public $authors;
+    public $status;
 
-    public function __construct(string $usersHasContentTable) {
-        parent::__construct();
-        $this->authors = new Proxy(
-            Query::create(
-                "SELECT " . join(", ", array_merge(
-                    array_keys(User::getTable()->getColumns()),
-                    [
-                        $usersHasContentTable . ".role AS author_role",
-                        $usersHasContentTable . ".permission AS author_permission"
-                    ]
-                )) . " FROM users JOIN " . $usersHasContentTable .
-                " ON users.id = " . $usersHasContentTable . ".user_id WHERE " .
-                $usersHasContentTable . "." . $this->entityName() . "_id = ?"
-            )->addAttribute($this->id),
-            User::class
-        );
-    }
+    abstract public function authors(): Proxy;
 
-    public static function published() {
-        return self::findBy("status", self::STATUS_PUBLISHED);
+    public static function published(): Collection {
+        return self::find("status", self::STATUS_PUBLISHED);
     }
 }

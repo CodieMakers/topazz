@@ -5,20 +5,20 @@
  * @package Topazz
  */
 
-namespace Topazz\View;
+namespace Topazz\View\Extension;
 
 
-use Slim\Csrf\Guard;
-use Slim\Http\Request;
+use Topazz\Application;
 
-class TwigCsrfExtension extends \Twig_Extension {
+class SecurityExtension extends \Twig_Extension {
 
     private $request;
     private $guard;
 
-    public function __construct(Guard $guard, Request $request) {
-        $this->guard = $guard;
-        $this->request = $request;
+    public function __construct() {
+        $container = Application::getInstance()->getContainer();
+        $this->guard = $container->get('guard');
+        $this->request = $container->get('request');
     }
 
     public function getFunctions() {
@@ -33,7 +33,7 @@ class TwigCsrfExtension extends \Twig_Extension {
         $name = $this->request->getAttribute($nameKey);
         $value = $this->request->getAttribute($valueKey);
         return
-            '<input type="hidden" name="'.$nameKey.'" value="'.$name.'"/>'.
-            '<input type="hidden" name="'.$valueKey.'" value="'.$value.'"/>';
+            '<input type="hidden" name="' . $nameKey . '" value="' . $name . '"/>' .
+            '<input type="hidden" name="' . $valueKey . '" value="' . $value . '"/>';
     }
 }

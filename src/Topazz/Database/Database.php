@@ -9,45 +9,69 @@ namespace Topazz\Database;
 
 
 use PDO;
-use Topazz\Database\Statement\CreateTableStatement;
-use Topazz\Database\Statement\CreateUserStatement;
-use Topazz\Database\Statement\DropTableStatement;
-use Topazz\Database\Statement\DropUserStatement;
-use Topazz\Database\Statement\SelectStatement;
+use Topazz\Data\Collection;
+use Topazz\Database\Statement\AbstractStatement;
+use Topazz\Database\Statement\CreateTable;
+use Topazz\Database\Statement\CreateUser;
+use Topazz\Database\Statement\Delete;
+use Topazz\Database\Statement\DropTable;
+use Topazz\Database\Statement\DropUser;
+use Topazz\Database\Statement\Insert;
+use Topazz\Database\Statement\Select;
+use Topazz\Database\Statement\Statement;
+use Topazz\Database\Table\Table;
 
-class Database extends PDO {
+class Database {
 
-    protected $entity;
+    protected $connection;
+    /** @var Statement $statement */
+    protected $statement;
+    protected $entity = \stdClass::class;
 
     public function __construct($dsn, $username, $password) {
-        $options = $this->getDefaultOptions();
-        parent::__construct($dsn, $username, $password, $options);
+        $this->connection = new PDO($dsn, $username, $password);
     }
 
-    private function getDefaultOptions() {
-        return [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_CLASS
-        ];
+    public function setStatement(Statement $statement) {
+        $this->statement = $statement;
+        return $this;
     }
 
-    public function select($what = ["*"]) {
-        return new SelectStatement($this, $what);
+    public function setEntity(string $entity) {
+        $this->entity = $entity;
+        return $this;
     }
 
-    public function createTable(string $table) {
-        return new CreateTableStatement($this, $table);
+    public function execute() {
+        $pdoStatement = $this->connection->prepare($this->statement->getQueryString());
+        $pdoStatement->execute($this->statement->getValues());
+        return new Result($pdoStatement, $this->entity);
     }
 
-    public function dropTable(string $table) {
-        return new DropTableStatement($this, $table);
+    public function executeAll(Collection $statements) {
+        return $statements->map(function (Statement $statement) {
+            $this->setStatement($statement);
+            return $this->execute();
+        });
     }
 
-    public function createUser(string $username, string $password) {
-        return new CreateUserStatement($this, $username, $password);
+    public static function select($what = ["*"]) {
+        return new Select($what);
     }
 
-    public function dropUser(string $username) {
-        return new DropUserStatement($this, $username);
+    public static function insert($what = []) {
+        return new Insert($what);
+    }
+
+    public static function update(string $table) {
+
+    }
+
+    public static function delete(string $from) {
+        return new Delete($from);
+    }
+
+    public static function custom(string $query) {
+        return new AbstractStatement($query);
     }
 }

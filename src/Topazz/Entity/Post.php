@@ -8,23 +8,52 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Database\Table;
-use Topazz\Database\TableBuilder;
+use Topazz\Database\Database;
+use Topazz\Database\Proxy\Proxy;
+use Topazz\Database\Table\Column;
+use Topazz\Database\Table\Table;
 
 class Post extends ContentEntity {
 
+    public $id;
+    public $title;
+    public $body;
+    public $uri;
+    protected $project_id;
+
     public static function getTable(): Table {
-        return (new TableBuilder("posts"))
-            ->serial('id')
-            ->varchar('title')->notNull()
-            ->text('body')
-            ->integer('status', TableBuilder::TINYINT, 2)->default(self::STATUS_PUBLISHED)
-            ->timestamp('create_time')->default('CURRENT_TIMESTAMP')
-            ->timestamp('update_time')->default('CURRENT_TIMESTAMP')->check('create_time <= update_time')
-            ->create();
+        return Table::create("posts")->addColumns(
+            Column::id()
+        );
     }
 
-    public function save() {
-        // TODO: Implement save() method.
+    public function authors(): Proxy {
+        return new Proxy(
+            Database::select()->from('users')->whereIn('id',
+                Database::select('user_id')->distinct()
+                    ->from('users_has_posts')
+                    ->where('post_id', '=', $this->id)
+            ), User::class
+        );
+    }
+
+    public function project(): Project {
+        return Project::find('id', $this->project_id)->first()->orNull();
+    }
+
+    public function content(): string {
+        return "";
+    }
+
+    public function create() {
+        // TODO: Implement create() method.
+    }
+
+    public function update() {
+        // TODO: Implement update() method.
+    }
+
+    public function remove() {
+        // TODO: Implement remove() method.
     }
 }
