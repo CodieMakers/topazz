@@ -1,0 +1,15 @@
+site:
+  default_host: topazz.dev
+
+security:
+  behind_proxy: false
+
+modules:
+  installed:
+    -
+      name: admin
+      class: Topazz\Admin\AdministrationModule
+
+system:
+  config:
+    key: value

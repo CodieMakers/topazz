@@ -1,0 +1,3 @@
+name: Administration module
+description: Basic administration for Topazz CMS
+module_class: Topazz\Admin\AdministrationModule

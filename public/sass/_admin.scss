@@ -1,28 +1,24 @@
+$color-white: #EBEFF3;
 
 body.admin {
   overflow: hidden;
-
   $navigation-width: 250px;
-
   & > header {
     width: $navigation-width;
-
     .item {
       padding: 1rem 2rem;
       text-decoration: none;
-      border-bottom: 1px solid rgba(0,0,0, 0.3);
-
+      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
       i.fa {
         margin-right: 1rem;
       }
-
       &:hover {
-        background: rgba(0,0,0,0.2);
+        background: rgba(0, 0, 0, 0.2);
       }
     }
   }
-
   & > main {
     margin-left: $navigation-width;
+    background-color: $color-white;
   }
 }

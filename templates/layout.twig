@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,14 +8,13 @@
     <title>{{ page_title }}</title>
     <link rel="stylesheet" href="https://unpkg.com/ace-css/css/ace.min.css">
     <link rel="stylesheet" href="https://unpkg.com/font-awesome/css/font-awesome.min.css">
-    {% block styles %}
-        <link rel="stylesheet" href="/public/css/style.css">
+    {% block assets %}
+        {% addCss("public/css/style.css") %}
+        {% addJs("https://unpkg.com/jquery") %}
     {% endblock %}
+    {{ assets() }}
 </head>
 <body{% if body_class is defined %} class="{{ body_class }}"{% endif %}>
 {% block content %}{% endblock %}
-{% block scripts %}
-    <script type="application/javascript" src="https://unpkg.com/jquery"></script>
-{% endblock %}
 </body>
 </html>

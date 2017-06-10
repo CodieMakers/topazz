@@ -5,8 +5,8 @@
  * @package Topazz
  */
 
-require_once dirname(__DIR__) . "/vendor/autoload.php";
+$classLoader = require_once dirname(__DIR__) . "/vendor/autoload.php";
 
 (new \Symfony\Component\Dotenv\Dotenv())->load(".env.sample");
 
-$app = new \Topazz\Application();
+$app = new \Topazz\Application($classLoader);
