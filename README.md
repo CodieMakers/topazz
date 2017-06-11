@@ -1,8 +1,6 @@
-# Topazz
+<h1>Topazz <img src="public/favicon.png" width="50"/></h1>
 
 [![Build Status](https://travis-ci.org/CodieMakers/topazz.svg?branch=master)](https://travis-ci.org/CodieMakers/topazz)
-
-<img src="public/favicon.png" width="50"/>
 
 Topazz is a school project. Simple CMS for microsite network and creating small sites under one or more domain names.
 
