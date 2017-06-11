@@ -22,6 +22,7 @@ class Database {
 
     public function __construct($dsn, $username, $password) {
         $this->connection = new PDO($dsn, $username, $password);
+        $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     }
 
     public function setStatement(StatementInterface $statement) {

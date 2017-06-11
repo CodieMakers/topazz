@@ -11,20 +11,21 @@ namespace Topazz\Admin\Controller;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Topazz\Controller\Controller;
-use Topazz\Database\Optional;
+use Topazz\Data\Optional;
 use Topazz\Entity\User;
 
 class AuthController extends Controller {
 
-    public function login(Request $request, Response $response) {
+    public function login(Request $request, Response $response, $args) {
+        var_dump($args);
         if ($request->isGet()) {
-            return $this->renderer->render($response, "admin/login.twig");
+            return $this->renderer->render($request, $response, "admin/login.twig");
         }
         $uri = $request->getQueryParam("return_url");
         /** @var Optional $user */
-        $user = User::findBy("username", $request->getParsedBodyParam("username"))->first();
+        $user = User::find("username", $request->getParsedBodyParam("username"))->first();
         if ($user->isNull()) {
-            return $this->renderer->render($response, "admin/login.twig", [
+            return $this->renderer->render($request, $response, "admin/login.twig", [
                 "error_type" => "user_not_found",
                 "username" => $request->getParsedBodyParam("username"),
                 "remember-me" => $request->getParsedBodyParam("remember-me")
@@ -33,7 +34,7 @@ class AuthController extends Controller {
         $user = $user->orNull(); //there cannot be null
         /** @var User $user */
         if (!$user->matchPassword($request->getParsedBodyParam("password"))) {
-            return $this->renderer->render($response, "admin/login.twig", [
+            return $this->renderer->render($request, $response, "admin/login.twig", [
                 "error_type" => "wrong_password",
                 "username" => $request->getParsedBodyParam("username"),
                 "remember-me" => $request->getParsedBodyParam("remember-me")

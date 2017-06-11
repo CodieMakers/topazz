@@ -24,6 +24,7 @@ class Renderer {
     protected $defaultData = [];
 
     public function __construct(Container $container) {
+        $this->defaultData["assets"] = new AssetManager();
         $this->templateLoader = new TemplateLoader("templates");
         $this->twig = new \Twig_Environment($this->templateLoader, [
             'cache' => Environment::isProduction() ? getcwd() . "/storage/cache/twig" : false

@@ -18,7 +18,7 @@ class ModuleInstaller {
 
     private $composerApplication;
 
-    public function __construct(Container $container) {
+    public function __construct() {
         $this->composerApplication = new Application();
         $this->composerApplication->setAutoExit(false);
     }

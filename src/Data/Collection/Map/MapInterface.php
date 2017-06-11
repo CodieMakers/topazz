@@ -27,4 +27,10 @@ interface MapInterface extends CollectionInterface {
     public function set($key, $item): MapInterface;
 
     public function get($key): Optional;
+
+    public function each(callable $loop): MapInterface;
+
+    public function filter(callable $filter): MapInterface;
+
+    public function map(callable $mapper): MapInterface;
 }

@@ -15,6 +15,7 @@ use Topazz\Application;
 use Topazz\ApplicationException;
 use Topazz\Entity\User;
 use Topazz\Middleware\MiddlewareInterface;
+use Topazz\TopazzApplicationException;
 
 class Authentication implements MiddlewareInterface {
 
@@ -24,13 +25,13 @@ class Authentication implements MiddlewareInterface {
         }
         $userId = isset($_SESSION["user_id"]) ? $_SESSION["user_id"] : $request->getCookieParam("user_id");
         if (is_null($userId) || (is_string($userId) && empty($userId))) {
-            $router = Application::getInstance()->getContainer()->router;
+            $router = Application::getInstance()->getApp()->getContainer()->get('router');
             $query = $request->getUri()->getQuery();
             $loginUri = $request->getUri()->withPath($router->pathFor("login"))
                 ->withQuery("return_uri=" . $request->getUri()->getPath() . (!empty($query) ? "&" . $query : ""));
             return $response->withRedirect($loginUri, 403);
         } else {
-            $user = User::findById($userId)->orThrow(new ApplicationException());
+            $user = User::find('id', $userId)->first()->orThrow(new TopazzApplicationException());
             return $next($request->withAttribute("current_user", $user), $response);
         }
     }

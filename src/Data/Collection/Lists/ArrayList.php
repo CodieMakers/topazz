@@ -8,9 +8,9 @@
 namespace Topazz\Data\Collection\Lists;
 
 
-use Topazz\Data\Optional;
 use Topazz\Data\Collection\Stream;
 use Topazz\Data\Collection\StreamInterface;
+use Topazz\Data\Optional;
 
 class ArrayList implements ListInterface {
 
@@ -27,7 +27,7 @@ class ArrayList implements ListInterface {
     }
 
     public function get($index): Optional {
-        return new Optional($this->items[$index]);
+        return new Optional($this->items[$index] ?: null);
     }
 
     public function first(): Optional {
@@ -44,6 +44,9 @@ class ArrayList implements ListInterface {
     }
 
     public function putAll(... $items): ListInterface {
+        if (count($items) === 1 && is_array($items[0])) {
+            $items = $items[0];
+        }
         foreach ($items as $item) {
             $this->put($item);
         }
@@ -65,6 +68,31 @@ class ArrayList implements ListInterface {
 
     public function collect(callable $collector) {
         return call_user_func($collector, $this->items);
+    }
+
+    public function map(callable $mapper): ListInterface {
+        $clone = clone $this;
+        foreach ($this->items as $index => $item) {
+            $clone[$index] = call_user_func($mapper, $item, $index);
+        }
+        return $clone;
+    }
+
+    public function filter(callable $filter): ListInterface {
+        $clone = new ArrayList();
+        foreach ($this->items as $index => $item) {
+            if (call_user_func($filter, $item, $index)) {
+                $clone->put($item);
+            }
+        }
+        return $clone;
+    }
+
+    public function each(callable $loop): ListInterface {
+        foreach ($this->items as $index => $item) {
+            call_user_func($loop, $item, $index);
+        }
+        return $this;
     }
 
     public function toArray(): array {

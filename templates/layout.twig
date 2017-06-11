@@ -6,15 +6,17 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ page_title }}</title>
-    <link rel="stylesheet" href="https://unpkg.com/ace-css/css/ace.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome/css/font-awesome.min.css">
+    <link rel="icon" href="/public/favicon.png">
     {% block assets %}
-        {% addCss("public/css/style.css") %}
-        {% addJs("https://unpkg.com/jquery") %}
+        {% do assets.addCss("https://unpkg.com/ace-css/css/ace.min.css") %}
+        {% do assets.addCss("https://unpkg.com/font-awesome/css/font-awesome.min.css") %}
+        {% do assets.addCss("/public/css/style.css") %}
+        {% do assets.addJs("https://unpkg.com/jquery") %}
     {% endblock %}
-    {{ assets() }}
+    {{ assets.css()|raw }}
 </head>
 <body{% if body_class is defined %} class="{{ body_class }}"{% endif %}>
 {% block content %}{% endblock %}
+{{ assets.js()|raw }}
 </body>
 </html>

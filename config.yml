@@ -10,6 +10,5 @@ modules:
       name: admin
       class: Topazz\Admin\AdministrationModule
 
-system:
-  config:
-    key: value
+  active:
+    - admin

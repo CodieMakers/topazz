@@ -30,50 +30,65 @@ class Column {
         $this->name = $name;
     }
 
-    public function type(string $type) {
+    public function type(string $type): Column {
         $this->type = $type;
         return $this;
     }
 
-    public function notNull() {
+    public function notNull(): Column {
         $this->null = false;
         return $this;
     }
 
-    public function unique() {
+    public function unique(): Column {
         $this->unique = true;
         return $this;
     }
 
-    public function unsigned() {
+    public function unsigned(): Column {
         $this->unsigned = true;
         return $this;
     }
 
-    public function zerofill() {
+    public function zerofill(): Column {
         $this->zerofill = true;
         return $this;
     }
 
-    public function primary() {
+    public function primary(): Column {
         $this->primary = true;
         return $this;
     }
 
-    public function autoIncrement() {
+    public function autoIncrement(): Column {
         $this->autoIncrement = true;
         return $this;
     }
 
-    public function default($value) {
+    public function default($value): Column {
         $this->default = $value;
         return $this;
     }
 
-    public function lock() {
+    public function onUpdate(string $function): Column {
+        if (isset($this->default) && preg_match('/(TIMESTAMP|DATETIME)/', $this->type)) {
+            $this->onUpdate = $function;
+        }
+        return $this;
+    }
+
+    public function lock(): Column {
         $this->locked = true;
         return $this;
     }
+
+    public function references(string $table, string $column): Column {
+        $this->foreign = true;
+        $this->reference = "`{$table}` (`{$column}`)";
+        return $this;
+    }
+
+    //---------- GETTERS
 
     public function getName(): string {
         return $this->name;
@@ -116,6 +131,7 @@ class Column {
     }
 
     public function getDefinition(): string {
+        // TODO: implement Columns' getDefinition() method
         return "`{$this->name}` {$this->type}";
     }
 

@@ -9,15 +9,15 @@ namespace Topazz\Database\Proxy;
 
 
 use Topazz\Database\Connector;
-use Topazz\Database\Statement\Statement;
+use Topazz\Database\Statement\StatementInterface;
 
 class Proxy implements \IteratorAggregate {
 
-    /** @var Statement $statement */
+    /** @var StatementInterface $statement */
     private $statement;
     private $entityClass;
 
-    public function __construct(Statement $statement, string $entityClass = \stdClass::class) {
+    public function __construct(StatementInterface $statement, string $entityClass = \stdClass::class) {
         $this->statement = $statement;
         $this->entityClass = $entityClass;
     }

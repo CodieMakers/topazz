@@ -29,6 +29,10 @@ class Connector {
     }
 
     public static function connect() {
+        if (is_null(self::$username)) {
+            self::resetUser();
+        }
+
         $dbName = Environment::get("DB_NAME");
         return new Database(
             "mysql:host=" . Environment::get("DB_HOST") . ";" . (!is_null($dbName) ? " dbname={$dbName};" : ""),

@@ -8,10 +8,9 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Database\Connector;
-use Topazz\Database\Database;
 use Topazz\Database\Table\Column;
 use Topazz\Database\Table\Table;
+use Topazz\Database\Statement\StatementException;
 
 class User extends Entity {
 
@@ -32,7 +31,7 @@ class User extends Entity {
     public $role = self::ROLE_BLOGGER;
     public $first_name;
     public $last_name;
-    public $profile_picture = "/public/img/profile.png";
+    public $profile_picture = "/public/img/default_profile_picture.png";
     private $password;
 
     public function setPassword(string $password) {
@@ -59,36 +58,42 @@ class User extends Entity {
             Column::create("role")->type("INTEGER(3)")->unsigned()->notNull()->default(self::ROLE_BLOGGER),
             Column::create("first_name")->type("VARCHAR(50)"),
             Column::create("last_name")->type("VARCHAR(50)"),
-            Column::create("profile_picture")->type("VARCHAR(255)")->default("/public/img/profile.png")
+            Column::create("profile_picture")->type("VARCHAR(255)")->default("/public/img/default_profile_picture.png")
         );
     }
 
     public function create() {
-        $this->id = Connector::connect()->setEntity(self::class)->setStatement(
-            self::getTableDefinition()->getInsertStatement()
-                ->values(
-                    $this->username,
-                    $this->email,
-                    $this->password,
-                    $this->role,
-                    $this->first_name,
-                    $this->last_name,
-                    $this->profile_picture
-                )
-        )->execute()->lastInsertedId();
+        $this->id = self::getTableDefinition()->getInsert()
+            ->values(
+                $this->username,
+                $this->email,
+                $this->password,
+                $this->role,
+                $this->first_name,
+                $this->last_name,
+                $this->profile_picture
+            )->execute()->lastInsertedId();
     }
 
     public function update() {
-        $affectedRows = Connector::connect()->setEntity(self::class)->setStatement(
-            self::getTableDefinition()->getUpdateStatement()->where('id', $this->id)
-                ->set('email', $this->email)
-                ->set('password', $this->password)
-                ->set('role', $this->role)
-                ->set('first_name', $this->first_name)
-        )->execute()->count();
+        $affectedRows = self::getTableDefinition()->getUpdate()
+            ->set('email', $this->email)
+            ->set('password', $this->password)
+            ->set('role', $this->role)
+            ->set('first_name', $this->first_name)
+            ->where('id', $this->id)
+            ->setEntity(self::class)->execute()->count();
+        if ($affectedRows === 0) {
+            throw new StatementException("There was some error during updating this entity.");
+        }
     }
 
     public function remove() {
-        // TODO: Implement remove() method.
+        $deletedRows = self::getTableDefinition()->getDelete()
+            ->where('id', $this->id)
+            ->execute()->count();
+        if ($deletedRows === 0) {
+            throw new StatementException("There was some error during removing this entity.");
+        }
     }
 }

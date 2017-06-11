@@ -28,16 +28,19 @@ class AdministrationModule extends Module {
     protected $name = "admin";
 
     public function isNeeded() {
-        return $_SERVER['HTTP_HOST'] === Environment::get('ADMIN_HOST');
+        return $_SERVER['HTTP_HOST'] === $this->container->get('config')->get('admin.host');
     }
 
     public function run() {
-        $config = Application::getInstance()->getConfiguration();
+        $config = $this->container->get('config');
+        $application = Application::getInstance()->getApp();
+        $events = $this->container->get('events');
         $this->container->get('renderer')
             ->registerTemplateDir("templates/admin", "admin");
-        Application::getInstance()->getEventEmitter()->emit("onBeforeAdminInit");
 
-        $this->application->group($config->get("admin.admin_uri"), function () {
+        $events->emit("onBeforeAdminInit");
+
+        $application->group($config->get("admin.uri"), function () {
             /** @var App $this */
             $this->get("", DashboardController::class . ":index");
 
@@ -60,20 +63,20 @@ class AdministrationModule extends Module {
         })
             ->add(SecurityMiddleware::ipRestriction())
             ->add(new Authentication())
-            ->add($this->container->get('csrf'))
+            ->add($this->container->get('guard'))
             ->add(TemplateConfigMiddleware::withBodyClass("admin"))
             ->add(TemplateConfigMiddleware::withPageTitle('AdministrationModule'));
 
-        Application::getInstance()->getEventEmitter()->emit("onAfterAdminInit");
-        Application::getInstance()->getEventEmitter()->emit("onAdminInit");
+        $events->emit("onAfterAdminInit");
+        $events->emit("onAdminInit");
 
-        $this->application->map(["GET", "POST"], "/login", AuthController::class . ":login")
+        $application->map(["GET", "POST"], "/login", AuthController::class . ":login")
             ->add(TemplateConfigMiddleware::withBodyClass("login"))->setName("login");
 
-        $this->application->get("/logout", AuthController::class . ":logout")
+        $application->get("/logout", AuthController::class . ":logout")
             ->add(TemplateConfigMiddleware::withBodyClass("logout"))->setName("logout");
 
-        $this->application->post("/register", AuthController::class . ":register")
+        $application->post("/register", AuthController::class . ":register")
             ->add(TemplateConfigMiddleware::withBodyClass("register"))->setName("register");
     }
 }

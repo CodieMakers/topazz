@@ -8,6 +8,9 @@
 namespace Topazz\Data\Collection;
 
 
+use Topazz\Data\Collection\Lists\ArrayList;
+use Topazz\Data\Collection\Map\Map;
+
 abstract class Collection {
 
     public static function toMap() {

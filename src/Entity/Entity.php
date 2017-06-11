@@ -9,19 +9,16 @@ namespace Topazz\Entity;
 
 
 use Topazz\Data\Collection\Lists\ListInterface;
-use Topazz\Database\Connector;
 
 abstract class Entity implements EntityInterface {
 
     public static function all(): ListInterface {
-        return Connector::connect()->setEntity(static::class)->setStatement(
-            static::getTableDefinition()->getSelectStatement()->all()
-        )->execute()->all();
+        return static::getTableDefinition()->getSelect()->all()
+            ->setEntity(static::class)->execute()->all();
     }
 
     public static function find(string $key, $value): ListInterface {
-        return Connector::connect()->setEntity(static::class)->setStatement(
-            static::getTableDefinition()->getSelectStatement()->all()->where($key, $value)
-        )->execute()->all();
+        return static::getTableDefinition()->getSelect()->all()->where($key, $value)
+            ->setEntity(static::class)->execute()->all();
     }
 }

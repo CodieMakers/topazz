@@ -8,29 +8,32 @@
 namespace Topazz\Database\Statement;
 
 
-use Topazz\Database\Table\Table;
-
 class InsertStatement extends Statement {
 
     protected $what;
-    protected $into;
+    protected $table;
     protected $valuesInserted = 0;
 
-    public function __construct(Table $table) {
-        parent::__construct($table);
-        $this->what = $table->getColumns();
+    public function __construct(string... $columnNames) {
+        parent::__construct();
+        $this->what = $columnNames;
     }
 
-    public function values(... $values) {
+    public function into(string $table): InsertStatement {
+        $this->table = $table;
+        return $this;
+    }
+
+    public function values(... $values): InsertStatement {
         $this->values->putAll($values);
         $this->valuesInserted++;
         return $this;
     }
 
     public function getQueryString(): string {
-        $sql = "INSERT INTO {$this->table->getName()} ";
+        $sql = "INSERT INTO {$this->table} ";
         if (!empty($this->what)) {
-            $sql .= "(" . $this->what->keys()->join(', ') . ") ";
+            $sql .= "(" . join(', ', $this->what) . ") ";
         }
         $sql .= "VALUES ";
         $values = [];

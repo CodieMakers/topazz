@@ -9,6 +9,7 @@ namespace Topazz\Entity;
 
 
 use Topazz\Data\Collection\Lists\ListInterface;
+use Topazz\Database\Proxy\Proxy;
 
 abstract class ContentEntity extends Entity {
 
@@ -17,13 +18,10 @@ abstract class ContentEntity extends Entity {
     const STATUS_FOR_REVIEW = 2;
 
     public $status = self::STATUS_FOR_REVIEW;
-    public $creation_time;
+    public $create_time;
     public $update_time;
-    public $author_id;
 
-    public function author(): User {
-        return User::find("id", $this->author_id)->first()->orThrow(new EntityNotFoundException());
-    }
+    abstract public function authors(): Proxy;
 
     public static function published(): ListInterface {
         return static::find("status", self::STATUS_PUBLISHED);

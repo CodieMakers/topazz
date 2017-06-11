@@ -1,5 +1,10 @@
 {% extends "layout.twig" %}
 
+{% block assets %}
+    {% do parent() %}
+    {% do assets.addJs("/public/js/form.js") %}
+{% endblock %}
+
 {% block content %}
     <section id="login-form" class="bg-white charcoal">
         <h1 class="block center border-bottom border-moonstone-blue pb2">Login</h1>
@@ -45,9 +50,5 @@
             </div>
         </form>
     </section>
-{% endblock %}
-
-{% block scripts %}
-    <script type="application/javascript" src="/public/js/form.js"></script>
 {% endblock %}
 

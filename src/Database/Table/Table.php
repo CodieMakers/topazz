@@ -25,7 +25,9 @@ class Table {
     }
 
     public function columns(Column... $columns) {
-        $this->columns->putAll($columns);
+        foreach ($columns as $column) {
+            $this->columns->set($column->getName(), $column);
+        }
         return $this;
     }
 
@@ -39,9 +41,7 @@ class Table {
     }
 
     public function getColumnNames(): array {
-        return $this->columns->map(function (Column $column) {
-            return $column->getName();
-        })->toArray();
+        return $this->columns->keys()->toArray();
     }
 
     public function getName(): string {
@@ -52,30 +52,26 @@ class Table {
         return $this->columns->get($columnName)->orNull();
     }
 
-    public function getConstraints() {
-        if (is_null($this->constraints)) {
-            $this->constraints = [
-                "primaryKeys" => $this->columns->filter([ColumnFilter::class, "primary"]),
-                "foreignKeys" => $this->columns->filter([ColumnFilter::class, "foreign"])
-            ];
-        }
-        return $this->constraints;
+    public function getSelect(string... $columns): SelectStatement {
+        return (new SelectStatement(...$columns))->from($this->getName());
     }
 
-    public function getSelectStatement(): SelectStatement {
-        return new SelectStatement($this);
+    public function getUpdate(): UpdateStatement {
+        return new UpdateStatement($this->getName());
     }
 
-    public function getUpdateStatement(): UpdateStatement {
-        return new UpdateStatement($this);
+    public function getInsert(string... $columns): InsertStatement {
+        return (new InsertStatement(...$columns))->into($this->getName());
     }
 
-    public function getInsertStatement(): InsertStatement {
-        return new InsertStatement($this);
+    public function getDelete(): DeleteStatement {
+        return new DeleteStatement($this->getName());
     }
 
-    public function getDeleteStatement(): DeleteStatement {
-        return new DeleteStatement($this);
+    public function __clone() {
+        $clone = clone $this;
+        $clone->columns = clone $this->columns;
+        return $clone;
     }
 
     public static function create(string $table) {

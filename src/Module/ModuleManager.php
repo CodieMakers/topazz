@@ -37,7 +37,7 @@ class ModuleManager {
         foreach ($this->config->get('modules.installed') as $installedModuleConfigItem) {
             if (in_array($installedModuleConfigItem['name'], $this->config->get('modules.active'))) {
                 /** @var Module $module */
-                $module = new $installedModuleConfigItem['module_class']($this->container);
+                $module = new $installedModuleConfigItem['class']($this->container);
                 $this->config->loadModuleConfig($module->getName());
                 $this->modules->put($module);
             }
@@ -67,6 +67,6 @@ class ModuleManager {
     }
 
     public function installer(): ModuleInstaller {
-        return new ModuleInstaller($this->container);
+        return new ModuleInstaller();
     }
 }

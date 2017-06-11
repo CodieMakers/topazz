@@ -13,6 +13,7 @@ use Slim\App;
 use Topazz\Event\EventEmitter;
 use Topazz\Middleware\ProjectResolver;
 use Topazz\Module\ModuleManager;
+use Topazz\Service\HttpServiceProvider;
 use Topazz\Service\LoggerServiceProvider;
 use Topazz\Service\SecurityServiceProvider;
 use Topazz\View\Renderer;
@@ -23,6 +24,7 @@ class Application {
 
     private static $services = [
         LoggerServiceProvider::class,
+        HttpServiceProvider::class,
         "events" => EventEmitter::class,
         "config" => Configuration::class,
         "renderer" => Renderer::class,
@@ -46,8 +48,6 @@ class Application {
         ]);
         $this->app = new App($this->container);
 
-        $this->app->add(EventEmitter::emitEventAfterMiddleware("onShutdown"));
-
         foreach (self::$services as $key => $serviceClass) {
             if (is_int($key)) {
                 $this->container->register(new $serviceClass);
@@ -56,12 +56,17 @@ class Application {
             }
         }
 
+        $this->app->add(EventEmitter::emitEventAfterMiddleware("onShutdown"));
+
         $this->app->add(new ProjectResolver());
         $this->container->get('events')->emit("onInit");
     }
 
     public function run() {
-        $this->container->get('modules')->run();
+        /** @var ModuleManager $modules */
+        $modules = $this->container->get('modules');
+        $modules->loadModules();
+        $modules->run();
         return $this->app->run(false);
     }
 

@@ -28,4 +28,10 @@ interface ListInterface extends CollectionInterface {
     public function put($item): ListInterface;
 
     public function putAll(... $items): ListInterface;
+
+    public function each(callable $loop): ListInterface;
+
+    public function filter(callable $filter): ListInterface;
+
+    public function map(callable $mapper): ListInterface;
 }

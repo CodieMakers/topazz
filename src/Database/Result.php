@@ -8,6 +8,9 @@
 namespace Topazz\Database;
 
 
+use PDO;
+use PDOStatement;
+use stdClass;
 use Topazz\Data\Collection\Lists\ArrayList;
 use Topazz\Data\Collection\Lists\ListInterface;
 
@@ -16,10 +19,10 @@ class Result {
     protected $connection;
     protected $statement;
 
-    public function __construct(\PDO $connection, \PDOStatement $statement, string $className = \stdClass::class) {
+    public function __construct(PDO $connection, PDOStatement $statement, string $className = stdClass::class) {
         $this->connection = $connection;
         $this->statement = $statement;
-        $this->statement->setFetchMode(\PDO::FETCH_CLASS, $className);
+        $this->statement->setFetchMode(PDO::FETCH_CLASS, $className);
     }
 
     public function all(): ListInterface {
@@ -31,7 +34,7 @@ class Result {
     }
 
     public function raw() {
-        $this->statement->setFetchMode(\PDO::FETCH_ASSOC);
+        $this->statement->setFetchMode(PDO::FETCH_ASSOC);
         return $this->statement->fetchAll();
     }
 

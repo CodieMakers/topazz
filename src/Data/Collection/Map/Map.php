@@ -78,6 +78,36 @@ class Map implements MapInterface {
         return call_user_func($collector, $this->values->toArray());
     }
 
+    public function each(callable $loop): MapInterface {
+        foreach ($this->keys as $key) {
+            call_user_func($loop, $key, $this->values->offsetGet($this->keys->indexOf($key)));
+        }
+        return $this;
+    }
+
+    public function filter(callable $filter): MapInterface {
+        $clone = new Map();
+        foreach ($this->keys as $key) {
+            $index = $this->keys->indexOf($key);
+            if (call_user_func($filter, $key, $this->values->offsetGet($index))) {
+                $clone->set($key, $this->values->offsetGet($index));
+            }
+        }
+        return $clone;
+    }
+
+    public function map(callable $mapper): MapInterface {
+        $clone = clone $this;
+        foreach ($this->keys as $key) {
+            $clone->set($key, call_user_func(
+                $mapper,
+                $key,
+                $this->values->offsetGet($this->keys->indexOf($key))
+            ));
+        }
+        return $clone;
+    }
+
     public function __clone() {
         $clone = clone $this;
         $clone->keys = clone $this->keys;

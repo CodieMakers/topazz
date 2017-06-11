@@ -17,7 +17,7 @@ class FlashStorageExtension extends \Twig_Extension {
     protected $flash;
 
     public function __construct(Container $container) {
-        $this->flash = $container->flash;
+        $this->flash = $container->get('flash');
     }
 
     public function getFunctions() {
