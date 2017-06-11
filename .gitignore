@@ -7,9 +7,12 @@
 /storage/cache/
 /storage/log/
 /node_modules/
+/modules/*
+/themes/*
 
 .env
 
 !/index.php
 !/composer.json
 !/.htaccess
+!.gitkeep
