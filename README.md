@@ -2,19 +2,19 @@
 
 [![Build Status](https://travis-ci.org/CodieMakers/topazz.svg?branch=master)](https://travis-ci.org/CodieMakers/topazz)
 
-Topazz is simple CMS made as project for one programming course on University of economics in Prague.  
-It is for generating microsite network for whole domain.
+<img src="public/favicon.png" width="50"/>
 
-It contains simple administration module which is protected against CSRF and unauthorized access.
+Topazz is a school project. Simple CMS for microsite network and creating small sites under one or more domain names.
+
+It contains simple administration module and it will have an installer in future.
 
 ## Installation
 
 ### ZIP
 
 Simply copy the downloaded zip file to the root of your web hosting and unzip it there.
-Than open your browser and complete the installation process by following the onscreen instructions.
+Then open your browser and complete the installation process by following the onscreen instructions _(in future)_.
 
 ### Composer
 
-This method is recommended for developers only.  
-In your web server root simply type: `$ composer create-project topazz/topazz` and it will download the latest release.
+In your web server's root directory simply type: `$ composer create-project topazz/topazz` and it will download the latest release and all other packages that this system needs.
