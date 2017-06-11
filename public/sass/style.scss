@@ -16,13 +16,13 @@ body {
 
 @import "helpers";
 @import "colors";
+@import "cursor";
 @import "form";
 @import "table";
 @import "card";
+@import "bottom-panel";
 @import "login";
 @import "admin";
-
-@include build-colors();
 
 .h0 {
   font-size: 5rem;

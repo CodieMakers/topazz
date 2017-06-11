@@ -1,0 +1,31 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    <header class="absolute top-0 left-0 bg-space-cadet white full-height">
+        <section id="user-info" class="clearfix px2 py3 bg-darken-2">
+            <div class="col col-3">
+                <img src="{{ current_user.profile_picture }}" class="circle fit">
+            </div>
+            <div class="col col-9 flex flex-column items-start justify-center pl2">
+                <a href="/admin/user/{{ current_user.id }}" class="white rounded">
+                    {{ current_user.first_name ~ ' ' ~ current_user.last_name }}
+                </a>
+                <div class="clearfix flex items-start full-width">
+                    <a href="/admin/settings" class="white btn btn-small">
+                        <i class="fa fa-cog"></i>
+                    </a>
+                    <a href="/index.php" class="golden-gate btn btn-small">
+                        <i class="fa fa-sign-out"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <section id="navigation" class="clearfix overflow-auto">
+            {% include 'admin/navigation.twig' %}
+        </section>
+    </header>
+    <main class="absolute top-0 right-0 left-0 full-height bg-white p2 overflow-auto">
+        {% block page %} {% endblock %}
+    </main>
+    {{ csrf_input() }}
+{% endblock %}

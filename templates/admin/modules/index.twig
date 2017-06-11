@@ -1,0 +1,29 @@
+{% extends "@admin/layout.twig" %}
+
+{% block page %}
+    <section class="card">
+        <h1><i class="fa fa-puzzle-piece"></i>Modules</h1>
+        <table class="hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for module in modules %}
+                <tr class="activated">
+                    <td>{{ module.id }}</td>
+                    <td>{{ module.name }}</td>
+                    <td>{{ module.description }}</td>
+                    <td>
+
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{% endblock %}

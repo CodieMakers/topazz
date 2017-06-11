@@ -1,0 +1,23 @@
+{% extends "admin/layout.twig" %}
+
+{% block page %}
+    <form action="/admin/user/{{ user.id }}" method="post" novalidate>
+        <section id="user-detail" class="card">
+            <h1><i class="fa fa-vcard"></i>User detail</h1>
+            <article class="card-body">
+
+            </article>
+        </section>
+
+        <section class="bottom-panel clearfix">
+            <div class="right">
+                <a href="/admin/user/{{ user.id }}/delete" class="btn btn-outline bg-golden-gate white">
+                    <i class="fa fa-recycle mr1"></i>Delete
+                </a>
+                <button type="submit" class="btn btn-primary bg-moonstone-blue white">
+                    <i class="fa fa-save mr1"></i>Save
+                </button>
+            </div>
+        </section>
+    </form>
+{% endblock %}

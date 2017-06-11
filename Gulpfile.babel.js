@@ -10,7 +10,7 @@ import autoprefixer from "gulp-autoprefixer";
 import cssnano from "gulp-cssnano";
 
 gulp.task('css', () => {
-    gulp.src('public/sass/style.scss')
+    gulp.src('public/sass/*.scss')
         .pipe(sass())
         .pipe(autoprefixer())
         .pipe(cssnano())
