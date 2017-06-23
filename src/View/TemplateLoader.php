@@ -8,11 +8,11 @@
 namespace Topazz\View;
 
 
-use Topazz\Theme\DynamicTheme;
+use Topazz\Container;
 
 class TemplateLoader extends \Twig_Loader_Filesystem {
 
-    public function registerTheme(DynamicTheme $theme) {
-        $this->addPath($theme->getTemplatesDir(), $theme->getName());
+    public function __construct(Container $container) {
+        parent::__construct($container->settings["templatesDir"]);
     }
 }

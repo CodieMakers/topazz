@@ -9,8 +9,8 @@ namespace Topazz\Module\Console;
 
 
 use Symfony\Component\Console\Output\Output as AbstractOutput;
-use Topazz\Data\Collection\Collection;
-use Topazz\Data\Collection\Lists\ArrayList;
+use Topazz\Data\Collections\Collectors;
+use Topazz\Data\Collections\Lists\ArrayList;
 
 class Output extends AbstractOutput {
 
@@ -39,6 +39,6 @@ class Output extends AbstractOutput {
     }
 
     public function join(string $glue = PHP_EOL) {
-        return $this->messages->collect(Collection::toString($glue));
+        return $this->messages->collect(Collectors::toString($glue));
     }
 }

@@ -14,40 +14,40 @@ use Topazz\Container;
 use Topazz\Environment;
 use Topazz\View\Extension\FlashStorageExtension;
 use Topazz\View\Extension\ModulesExtension;
-use Topazz\View\Extension\ParsedownExtension;
+use Topazz\View\Extension\MarkdownExtension;
 use Topazz\View\Extension\SecurityExtension;
 
 class Renderer {
 
     protected $twig;
-    protected $templateLoader;
     protected $defaultData = [];
 
     public function __construct(Container $container) {
         $this->defaultData["assets"] = new AssetManager();
-        $this->templateLoader = new TemplateLoader("templates");
-        $this->twig = new \Twig_Environment($this->templateLoader, [
-            'cache' => Environment::isProduction() ? getcwd() . "/storage/cache/twig" : false
+        $this->defaultData["breadcrumbs"] = $container->breadcrumbs;
+        $this->twig = new \Twig_Environment($container->templates, [
+            'cache' => Environment::isProduction() ? getcwd() . "/storage/cache/twig" : false,
+            'debug' => !Environment::isProduction()
         ]);
         $this->twig->addExtension(new ModulesExtension($container));
         $this->twig->addExtension(new SecurityExtension($container));
         $this->twig->addExtension(new FlashStorageExtension($container));
-        $this->twig->addExtension(new ParsedownExtension());
-    }
-
-    public function registerTemplateDir(string $templateDir, string $namespace = null) {
-        $this->templateLoader->addPath($templateDir, $namespace);
+        $this->twig->addExtension(new MarkdownExtension($container));
     }
 
     public function addExtension(\Twig_Extension $extension) {
         $this->twig->addExtension($extension);
     }
 
-    public function render(Request $request, Response $response, string $template, $data = []): Response {
+    public function display(Request $request, Response $response, string $template, $data = []): Response {
         $this->defaultData = array_merge($this->defaultData, $request->getAttributes());
         $response->getBody()->write(
             $this->twig->render($template, array_merge($this->defaultData, $data))
         );
         return $response;
+    }
+
+    public function render(string $template, $data = []): string {
+        return $this->twig->render($template, array_merge($this->defaultData, $data));
     }
 }

@@ -8,61 +8,60 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Data\Collection\ArrayList;
-use Topazz\Database\Connector;
-use Topazz\Database\Database;
-use Topazz\Database\Proxy\Proxy;
-use Topazz\Database\Table\Column;
-use Topazz\Database\Table\Table;
+use Topazz\Data\Collections\ListInterface;
+use Topazz\Database\Statement\Statement;
 use Topazz\Theme\Layout;
 
 class Page extends ContentEntity {
 
-    public $id;
+    protected static $table = "pages";
+    protected static $authorsTable = "page_authors";
+    protected static $authorsContentColumnName = "page_id";
+
     public $name;
     public $title;
     public $uri = "/";
-    public $layout;
+    public $layout_name;
     public $project_id;
-    public $project;
+    public $content = "";
+    public $posts = [];
 
     public function __construct() {
-        $this->project = Project::find("id", $this->project_id);
+        parent::__construct();
+        if (!is_null($this->id)) {
+            $this->refreshPosts();
+        }
     }
 
-    public static function getTableDefinition(): Table {
-        return Table::create("pages")->columns(
-            Column::id()
-        );
+    public function refreshPosts() {
+        $this->posts = Post::find('page_id', $this->id)->toArray();
     }
 
-    public function authors(): Proxy {
-        return new Proxy(
-            Database::select()->from('users')->whereIn('id',
-                Database::select('user_id')->distinct()
-                    ->from('users_has_pages')
-                    ->where('page_id', '=', $this->id)
-            ), User::class
-        );
+    public function project(): Project {
+        return Project::findById($this->project_id);
     }
 
-    public function posts(): Proxy {
-        return new Proxy(
-            Database::select()->from('posts')
-                ->where('page_id', '=', $this->id),
-            Post::class
-        );
+    public function setLayout(string $layoutName) {
+        // TODO
     }
 
-    public function create() {
-        // TODO: Implement create() method.
+    protected function create() {
+        $this->id = Statement::insert(
+            "name", "title", "uri", "layout_name", "project_id", "status"
+        )->into("pages")->values(
+            $this->name, $this->title, $this->uri, $this->layout_name, $this->project_id, $this->status
+        )->prepare()->execute()->lastInsertedId();
     }
 
-    public function update() {
-        // TODO: Implement update() method.
-    }
-
-    public function remove() {
-        // TODO: Implement remove() method.
+    protected function update() {
+        Statement::update("pages")
+            ->set("name", $this->name)
+            ->set("title", $this->title)
+            ->set("uri", $this->uri)
+            ->set("layout_name", $this->layout_name)
+            ->set("project_id", $this->project_id)
+            ->set("status", $this->status)
+            ->where("id", $this->id)
+            ->prepare()->execute();
     }
 }

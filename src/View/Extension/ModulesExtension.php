@@ -8,10 +8,8 @@
 namespace Topazz\View\Extension;
 
 
-use Topazz\Application;
 use Topazz\Container;
 use Topazz\Module\ModuleManager;
-use Topazz\View\AssetManager;
 
 class ModulesExtension extends \Twig_Extension {
 
@@ -21,10 +19,37 @@ class ModulesExtension extends \Twig_Extension {
 
     public function __construct(Container $container) {
         $this->container = $container;
-        $this->moduleManager = $container->get('modules');
+        $this->moduleManager = $container->modules;
     }
 
     public function getFunctions() {
-        return [];
+        return [
+            new \Twig_Function("add_breadcrumb", [$this, "addBreadcrumb"]),
+            new \Twig_Function("render_breadcrumbs", [$this, "renderBreadcrumbs"], ["is_safe" => ["html"]]),
+            new \Twig_Function("module_active", [$this, "isModuleActive"])
+        ];
+    }
+
+    public function getFilters() {
+        return [
+        ];
+    }
+
+    public function getTests() {
+        return [
+
+        ];
+    }
+
+    public function addBreadcrumb(string $label, string $uri) {
+        $this->container->breadcrumbs->add($label, $uri);
+    }
+
+    public function renderBreadcrumbs() {
+        return (string)$this->container->breadcrumbs;
+    }
+
+    public function isModuleActive(string $moduleName) {
+        return $this->moduleManager->isActive($moduleName);
     }
 }

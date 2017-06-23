@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Administration</title>
+    <link rel="icon" href="/public/favicon.png">
+    <link rel="stylesheet" href="https://unpkg.com/ace-css/css/ace.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/public/css/admin.css">
+</head>
+<body>
+<div id="admin">
+    <header id="side-panel" class="absolute full-height top-0 left-0 white bg-space-cadet">
+        <section id="user-info" class="flex flex-wrap items-center p2 bg-darken-2">
+            <img src="{{ current_user.profile_picture }}" alt="Profile picture" class="circle col-4"/>
+            <div class="pl2 flex-auto">
+                <a href="{{ admin.uri }}/users/{{ current_user.id }}" class="white">
+                    {{ current_user.first_name }}<br>{{ current_user.last_name }}
+                </a>
+            </div>
+        </section>
+        <section id="navigation" class="clearfix">
+            <a href="{{ admin.uri }}/" class="item white">
+                <i class="fa fa-dashboard"></i>Dashboard
+            </a>
+            <a href="{{ admin.uri }}/projects" class="item white">
+                <i class="fa fa-briefcase"></i>Projects
+            </a>
+            <a href="{{ admin.uri }}/files" class="item white">
+                <i class="fa fa-folder-open-o"></i>Files
+            </a>
+            <a href="{{ admin.uri }}/users" class="item white">
+                <i class="fa fa-users"></i>Users
+            </a>
+            <a href="/auth/logout" class="item white">
+                <i class="fa fa-sign-out golden-gate mr2"></i>Logout
+            </a>
+        </section>
+    </header>
+    <main id="main" class="absolute top-0 right-0 left-0 full-height bg-platinum-light p2 overflow-auto">
+        {% block content %}
+        {% endblock %}
+    </main>
+</div>
+</body>
+</html>

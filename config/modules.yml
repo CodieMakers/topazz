@@ -1,0 +1,13 @@
+installed:
+  admin:
+    dir: ''
+    class: \Topazz\Admin\AdministrationModule
+    requires:
+      - auth
+  auth:
+    dir: ''
+    class: \Topazz\Auth\AuthModule
+
+active:
+  - admin
+  - auth

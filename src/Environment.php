@@ -16,7 +16,7 @@ use Topazz\Database\Database;
 class Environment {
 
     protected static $env = [
-        "ENV" => "development",
+        "ENV" => "production",
         "DB_HOST" => "localhost",
         "DB_NAME" => "topazz_db",
         "DB_USER" => "topazz_db"

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Vue</title>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-resource"></script>
+    <style>
+        .loading {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background-color: cornflowerblue;
+        }
+        #btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <loader></loader>
+    <button id="btn" type="button" @click="changeLoader">Change Loader</button>
+    <template v-if="!loadingUser">
+        <h1>{{$user.username}}</h1>
+    </template>
+    <h1>Original: <span v-for="user in users">{{user.id}}</span></h1>
+    <div>
+        <child></child>
+    </div>
+</div>
+<script>
+    Vue.use({
+        install: function(_Vue) {
+            var loader = {
+                loading: false,
+                currentUser: {
+                    id: 0
+                }
+            };
+            _Vue.component('loader', {
+                template: '<div class="loading" v-if="loading"></div>',
+                data: function() {
+                    return loader;
+                }
+            });
+            Object.defineProperty(_Vue.prototype, '$loading', {
+                get: function() {
+                    return loader.loading;
+                },
+                set: function(loading) {
+                    loader.loading = loading;
+                }
+            });
+            Object.defineProperty(_Vue.prototype, '$user', {
+                get: function() {
+                    return loader.currentUser;
+                },
+                set: function(loading) {
+                    loader.currentUser = loading;
+                }
+            });
+        }
+    });
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loadingUser: false,
+            users: [
+                {id:0},{id:1}
+            ]
+        },
+        created: function () {
+            this.loadUser();
+        },
+        methods: {
+            changeLoader: function (event) {
+                this.$loading = !this.$loading;
+                event.preventDefault();
+            }, loadUser() {
+                var $this = this;
+                this.loadingUser = true;
+                this.$http.get('/admin/current-user').then(function (response) {
+                    $this.$user = response.body;
+                    $this.loadingUser = false;
+                });
+
+            }
+        }, components: {
+            'child': {
+                template: '<div><h1>{{user.id}}</h1><button @click="remove">Remove</button></div>',
+                data: function() {
+                    return {
+                        user: this.$parent.users[0]
+                    };
+                },
+                methods: {
+                    remove: function() {
+                        this.$parent.users.splice(0,1);
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

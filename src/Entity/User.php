@@ -8,9 +8,14 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Database\Table\Column;
-use Topazz\Database\Table\Table;
-use Topazz\Database\Statement\StatementException;
+use Gravatar\Gravatar;
+use function in_array;
+use Topazz\Application;
+use Topazz\Container;
+use Topazz\Database\Statement\Statement;
+use Topazz\Environment;
+use Topazz\Service\Security;
+use Topazz\TopazzApplicationException;
 
 class User extends Entity {
 
@@ -19,20 +24,31 @@ class User extends Entity {
     const ROLE_EDITOR = 2;
     const ROLE_BLOGGER = 3;
 
-    protected static $permissions = [
-        self::ROLE_MODERATOR => [],
-        self::ROLE_EDITOR => [],
-        self::ROLE_BLOGGER => []
-    ];
+    protected static $table = "users";
 
-    public $id;
+    protected $config;
+
+    public $uuid;
     public $username;
     public $email;
     public $role = self::ROLE_BLOGGER;
+    public $permissions = [];
     public $first_name;
     public $last_name;
-    public $profile_picture = "/public/img/default_profile_picture.png";
+    public $profile_picture = "/public/img/picture.png";
     private $password;
+
+    public function __construct() {
+        parent::__construct();
+        $this->config = $this->container->config;
+
+        $allPermissions = $this->config->get('user.permissions');
+        if ($this->role === self::ROLE_ADMIN) {
+            $this->permissions = $this->config->get('user.available_permissions');
+        } else {
+            $this->permissions = $allPermissions[$this->role];
+        }
+    }
 
     public function setPassword(string $password) {
         $this->password = password_hash($password, PASSWORD_DEFAULT);
@@ -43,57 +59,51 @@ class User extends Entity {
     }
 
     public function hasPermission(string $permission): bool {
+        if (!$this->isValidPermission($permission)) {
+            throw new TopazzApplicationException("This is not any valid user permission");
+        }
         if ($this->role == self::ROLE_ADMIN) {
             return true;
         }
-        return in_array($permission, self::$permissions[$this->role]);
+        return in_array($permission, $this->permissions);
     }
 
-    public static function getTableDefinition(): Table {
-        return Table::create("users")->columns(
-            Column::id(),
-            Column::create("username")->type("VARCHAR(50)")->unique()->notNull(),
-            Column::create("password")->type("VARCHAR(255)")->notNull(),
-            Column::create("email")->type("VARCHAR(50)")->unique()->notNull(),
-            Column::create("role")->type("INTEGER(3)")->unsigned()->notNull()->default(self::ROLE_BLOGGER),
-            Column::create("first_name")->type("VARCHAR(50)"),
-            Column::create("last_name")->type("VARCHAR(50)"),
-            Column::create("profile_picture")->type("VARCHAR(255)")->default("/public/img/default_profile_picture.png")
-        );
+    private function isValidPermission(string $permission): bool {
+        return in_array($permission, $this->config->get('user.available_permissions'));
     }
 
-    public function create() {
-        $this->id = self::getTableDefinition()->getInsert()
-            ->values(
-                $this->username,
-                $this->email,
-                $this->password,
-                $this->role,
-                $this->first_name,
-                $this->last_name,
-                $this->profile_picture
-            )->execute()->lastInsertedId();
+    protected function create() {
+        $this->id = Statement::insert(
+            'uuid',
+            'username',
+            'email',
+            'password',
+            'role',
+            'first_name',
+            'last_name',
+            'profile_picture'
+        )->into('users')->values(
+            uniqid(),
+            $this->username,
+            $this->email,
+            $this->password,
+            $this->role,
+            $this->first_name,
+            $this->last_name,
+            $this->profile_picture
+        )->prepare()->execute()->lastInsertedId();
     }
 
-    public function update() {
-        $affectedRows = self::getTableDefinition()->getUpdate()
+    protected function update() {
+        Statement::update('users')
+            ->set('username', $this->username)
             ->set('email', $this->email)
             ->set('password', $this->password)
             ->set('role', $this->role)
             ->set('first_name', $this->first_name)
+            ->set('last_name', $this->last_name)
+            ->set('profile_picture', $this->profile_picture)
             ->where('id', $this->id)
-            ->setEntity(self::class)->execute()->count();
-        if ($affectedRows === 0) {
-            throw new StatementException("There was some error during updating this entity.");
-        }
-    }
-
-    public function remove() {
-        $deletedRows = self::getTableDefinition()->getDelete()
-            ->where('id', $this->id)
-            ->execute()->count();
-        if ($deletedRows === 0) {
-            throw new StatementException("There was some error during removing this entity.");
-        }
+            ->prepare()->execute();
     }
 }

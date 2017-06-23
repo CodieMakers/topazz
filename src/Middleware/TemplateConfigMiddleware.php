@@ -21,7 +21,7 @@ class TemplateConfigMiddleware {
         return self::with('body_class', $class);
     }
 
-    private static function with($configName, $value) {
+    public static function with($configName, $value) {
         return function (Request $request, Response $response, callable $next) use ($configName, $value) {
             return $next($request->withAttribute($configName, $value), $response);
         };

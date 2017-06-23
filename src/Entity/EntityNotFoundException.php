@@ -7,10 +7,10 @@
 
 namespace Topazz\Entity;
 
-use Exception;
+use Topazz\TopazzApplicationException;
 
 
-class EntityNotFoundException extends Exception {
+class EntityNotFoundException extends TopazzApplicationException {
     public function __construct() {
         parent::__construct('This entity was not found.');
     }

@@ -4,45 +4,56 @@
   border-color: rgba(0,0,0,0.2);
   border-radius: 2px;
   box-shadow: 0 1px 10px -2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  background-color: lighten($platinum, 10%);
+  margin-bottom: 2rem;
 
-  & > *:not(.card-body):not(table) {
+  // ---- HEADER
+  & > .card-header,
+  & > h1 {
     margin: 2rem;
-  }
 
+    i.fa {
+      margin-right: 1rem;
+    }
+  }
+  // ---- BODY
   & > table,
-  & > .card-body {
+  & > .table,
+  & > .card-body,
+  & > article {
+    margin: 0;
     border-top-style: solid;
     border-top-width: 1px;
     border-top-color: $platinum;
   }
 
-  & > .card-body > * {
+  & > .card-body > *:not(.m0),
+  & > article:not(.footnote) > *:not(.m0) {
     margin-top: 2rem;
     margin-right: 2rem;
     margin-bottom: 2rem;
     margin-left: 2rem;
   }
 
-  & > h1 {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-
-    & > i.fa {
-      margin-right: 1rem;
-    }
-  }
-
-  & > table {
+  & > table, & > .table {
     width: 100%;
 
+    .row > .col:first-child,
     tr > td:first-child,
     tr > th:first-child {
       padding-left: 1rem;
     }
 
+    .row > .col:last-child,
     tr > td:last-child,
     tr > th:last-child {
       padding-right: 1rem;
     }
+  }
+
+  & > .footnote {
+    padding: 1rem 2rem;
+    font-size: 0.7rem;
   }
 }

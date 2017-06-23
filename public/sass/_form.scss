@@ -1,4 +1,4 @@
-form {
+form, .form {
 
   input,
   input + label,
@@ -6,7 +6,23 @@ form {
     position: relative;
   }
 
-  input:not([type=checkbox]):not([type=button]) {
+  label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  input {
+    margin-bottom: 1rem;
+  }
+
+  .row {
+    label, input, .label, .input, .select {
+      margin-bottom: 0;
+    }
+  }
+
+  input:not([type=checkbox]):not([type=button]), select {
     &:focus {
       outline: none;
       border-color: $moonstone-blue;
@@ -16,11 +32,11 @@ form {
   label.required:after {
     content: "\f005";
     position: absolute;
-    top: -0.5rem;
-    right: 1rem;
+    top: -.2rem;
+    left: -.5rem;
     color: $golden-gate;
     font-family: "FontAwesome";
-    font-size: 0.7rem;
+    font-size: 0.5rem;
   }
 
   input[required]:invalid,
@@ -28,7 +44,7 @@ form {
     border-color: $golden-gate;
   }
 
-  input[type=checkbox].toggle {
+  .checkbox.toggle {
     display: block;
     line-height: 26px;
     width: 80px;
@@ -69,7 +85,7 @@ form {
       top: 3px;
       left: 3px;
       z-index: 1;
-      background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+      background: $platinum;
       border-radius: 5px;
       transition: all 0.4s ease;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);

@@ -11,16 +11,16 @@ namespace Topazz\Event;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Topazz\Application;
-use Topazz\Data\Collection\Map\Map;
-use Topazz\Data\Collection\Stack\Stack;
-use Topazz\Data\StringUtils;
+use Topazz\Data\Collections\Maps\HashMap;
+use Topazz\Data\Collections\Stack\Stack;
+use Topazz\Data\Utils;
 
 class EventEmitter {
 
     protected $eventListeners;
 
     public function __construct() {
-        $this->eventListeners = new Map();
+        $this->eventListeners = new HashMap();
     }
 
     public function emit(string $hook, Event $event = null) {
@@ -48,12 +48,12 @@ class EventEmitter {
         $hook = $this->normalizeHookName($hook);
         /** @var Stack $stack */
         $stack = $this->eventListeners->get($hook)->orGet(new Stack());
-        $stack->put($listener);
+        $stack->add($listener);
         $this->eventListeners[$hook] = $stack;
     }
 
     private function normalizeHookName(string $hook): string {
-        return StringUtils::camelize($hook);
+        return Utils::camelize($hook);
     }
 
     private static function getInstance(): EventEmitter {

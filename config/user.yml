@@ -1,0 +1,53 @@
+available_permissions:
+  - system.settings
+  - system.modules
+  - system.themes
+  - system.files
+  - system.users
+  - system.projects
+  - system.pages
+  - system.posts
+  - user.all
+  - user.create
+  - user.edit
+  - user.remove
+  - project.all
+  - project.create
+  - project.edit
+  - project.remove
+  - page.all
+  - page.create
+  - page.edit
+  - page.remove
+  - post.all
+  - post.create
+  - post.edit
+  - post.remove
+
+permissions:
+  1:
+    - system.settings
+    - system.themes
+    - system.users
+    - system.projects
+    - system.pages
+    - system.posts
+    - system.files
+    - user.create
+    - project.all
+    - page.all
+    - post.all
+  2:
+    - system.projects
+    - system.pages
+    - system.posts
+    - system.files
+    - project.edit
+    - page.all
+    - post.all
+  3:
+    - system.pages
+    - system.posts
+    - system.files
+    - page.edit
+    - post.all

@@ -1,8 +1,4 @@
-$moonstone-blue: #75B8C8;
-$golden-gate: #BC412B;
-$platinum: #E4E3D3;
-$space-cadet: #2E2D4D;
-$charcoal: #36494E;
+@import "./color-variables";
 
 $colors: ('moonstone-blue', $moonstone-blue),
   ('golden-gate', $golden-gate),
@@ -16,6 +12,9 @@ $colors: ('moonstone-blue', $moonstone-blue),
   }
   .bg-#{$colorName} {
     background-color: $color;
+  }
+  .bg-over-#{$colorName} {
+    background-color: transparentize($color, 0.5);
   }
   .border-#{$colorName} {
     border-color: $color;

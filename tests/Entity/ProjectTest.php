@@ -7,23 +7,24 @@
 
 namespace Topazz\Tests\Entity;
 
+use Faker\Factory;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
-use Topazz\Entity\Page;
 use Topazz\Entity\Project;
 
 class ProjectTest extends TestCase {
 
-    private $project;
+    /** @var Generator $faker */
     private $faker;
 
     protected function setUp() {
-        $this->faker = new Generator();
-        $this->project = new Project();
-        $this->project->name = $this->faker->name;
-        $this->project->host = "app.topazz.dev";
-        $page = new Page();
-        $page->uri = "/";
-        $this->project->addPage($page);
+        $this->faker = Factory::create();
+    }
+
+    public function testCreateProject() {
+        $project = new Project();
+        $project->name = $this->faker->name;
+        $project->host = "app.topazz.dev";
+        $project->setTheme("simple-theme");
     }
 }

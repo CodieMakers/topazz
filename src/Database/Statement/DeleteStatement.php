@@ -52,6 +52,7 @@ class DeleteStatement extends Statement {
     public function getQueryString(): string {
         $where = "";
         if ($this->whereClause->length() > 0) $where = " WHERE " . $this->whereClause->join();
+        $this->values->putAll($this->whereClause->getValues());
         return "DELETE FROM {$this->table}{$where}";
     }
 }

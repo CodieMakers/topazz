@@ -21,7 +21,7 @@ class Authorization {
             if ($user->role === $role) {
                 return $next($request, $response);
             }
-            return $response->withStatus(403, 'You don\'t have enough permissions.');
+            return $response->withStatus(403);
         };
     }
 
@@ -32,7 +32,7 @@ class Authorization {
             if ($user->hasPermission($permissionCode)) {
                 return $next($request, $response);
             }
-            return $response->withStatus(403, 'You don\'t have enough permissions.');
+            return $response->withStatus(403);
         };
     }
 }

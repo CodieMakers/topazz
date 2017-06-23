@@ -1,0 +1,41 @@
+{% extends "@admin/admin.twig" %}
+
+{% block content %}
+    <section class="card" id="project-list">
+        <header class="card-header flex flex-wrap items-center justify-between">
+            <h1 class="m0">
+                <i class="fa fa-briefcase"></i>Projects
+            </h1>
+            <a href="{{ admin.uri }}/project" class="btn btn-outline moonstone-blue">
+                <i class="fa fa-plus"></i>Add
+            </a>
+        </header>
+        <article class="table">
+            <header class="row table-header">
+                <div class="col">Name</div>
+                <div class="col">Domain</div>
+                <div class="col">Status</div>
+                <div class="col">Theme</div>
+                <div class="col">Actions</div>
+            </header>
+            {% for project in projects %}
+                <div class="row center border-bottom border-platinum">
+                    <div class="col">{{ project.name }}</div>
+                    <div class="col">{{ project.host }}</div>
+                    <div class="col">{{ statusNames[project.status] }}</div>
+                    <div class="col">{{ project.theme_name }}</div>
+                    <div class="col">
+                        <a href="{{ admin.uri }}/project/{{ project.id }}" class="btn action">
+                            <i class="fa fa-external-link"></i>Detail
+                        </a>
+                        {% if 'project.remove' in current_user.permissions %}
+                            <a href="{{ admin.uri }}/project/{{ project.id }}/remove" class="btn action danger white">
+                                <i class="fa fa-trash"></i>Remove
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </article>
+    </section>
+{% endblock %}

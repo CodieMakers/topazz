@@ -24,18 +24,15 @@ class Optional {
     }
 
     public function orCall(callable $callable) {
-        if (is_null($this->item)) {
-            return call_user_func($callable);
-        }
-        return $this->item;
+        return $this->item ?: call_user_func($callable);
     }
 
     public function orGet($item) {
-        return is_null($this->item)? $item : $this->item;
+        return $this->item ?: $item;
     }
 
     public function orNull() {
-        return $this->orGet(null);
+        return $this->item ?: null;
     }
 
     public function isNull() {

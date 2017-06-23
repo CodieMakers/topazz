@@ -20,14 +20,13 @@ use Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware;
 class HttpServiceProvider implements ServiceProviderInterface {
 
     public function register(Container $container) {
+        if (!isset($_SESSION)) {
+            @session_start();
+        }
         $container["flash"] = function ($c) {
-            if (!isset($_SESSION)) {
-                @session_start();
-            }
             return new Messages();
         };
 
-        /** @var App $app */
         $app = Application::getInstance()->getApp();
         $app->add(new IpAddress());
         if (!Environment::isProduction()) {

@@ -6,6 +6,7 @@
 /docs/
 /storage/cache/
 /storage/log/
+/storage/files/
 /node_modules/
 /modules/*
 /themes/*

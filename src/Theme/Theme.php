@@ -9,25 +9,25 @@ namespace Topazz\Theme;
 
 
 use Topazz\Container;
-use Topazz\Data\Collection\Lists\ArrayList;
-use Topazz\Entity\Page;
 
 abstract class Theme {
 
+    protected static $templateDir;
+
     protected $name;
+    protected $parent;
+    protected $layouts = [];
+
     protected $container;
-    protected $renderer;
 
     public function __construct(Container $container) {
         $this->container = $container;
-        $this->renderer = $container->get('renderer');
+        if (isset(static::$templateDir)) {
+            $container->templates->addPath(static::$templateDir, $this->getName());
+        }
     }
 
     public function getName() {
         return $this->name;
     }
-
-    abstract public function render(Page $page): string;
-
-    abstract public function layouts(): ArrayList;
 }

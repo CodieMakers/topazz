@@ -7,6 +7,11 @@
 
 
 use Topazz\Application;
+use Topazz\Environment;
 
-$classLoader = require __DIR__ . "/vendor/autoload.php";
-$app = new Application($classLoader);
+require_once "vendor/autoload.php";
+$app = new Application([
+    "configFilename" => "config.test.yml"
+]);
+
+echo uniqid();

@@ -1,0 +1,8 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    {% for post in page.posts() %}
+        {% set config = post.config() %}
+        {% include '@simple-theme/modular/' ~ config.get('modular') with ['post': post] %}
+    {% endfor %}
+{% endblock %}

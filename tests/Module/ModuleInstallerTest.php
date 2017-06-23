@@ -22,11 +22,7 @@ class ModuleInstallerTest extends TestCase {
 
     public function testListModules() {
         $modules = $this->moduleInstaller->listModules();
-        var_dump($modules);
         $this->assertNotNull($modules);
-    }
-
-    public function testInstallModule() {
-        $this->moduleInstaller->install("topazz/simple");
+        $this->assertCount(2, $modules);
     }
 }

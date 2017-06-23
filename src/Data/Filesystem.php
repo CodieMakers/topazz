@@ -36,13 +36,17 @@ class Filesystem {
 
     public static function parseYAML(string $filename) {
         $filesystem = self::fromPath();
-        if ($filesystem->get($filename)->exists()) {
+        if ($filesystem->has($filename)) {
             return Yaml::parse($filesystem->read($filename), Yaml::PARSE_KEYS_AS_STRINGS);
         }
         return [];
     }
 
     public static function writeYAML(string $filename, array $content) {
-        self::fromPath()->write($filename, Yaml::dump($content));
+        self::fromPath()->write(
+            $filename,
+            Yaml::dump($content, PHP_INT_MAX, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK),
+            true
+        );
     }
 }

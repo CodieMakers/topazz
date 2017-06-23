@@ -1,0 +1,17 @@
+{% extends "layout.twig" %}
+
+{% block assets %}
+    {% do parent() %}
+    {% do assets.addCss('/public/css/simple-theme.css') %}
+{% endblock %}
+
+
+{% block content %}
+    {% if posts is not null %}
+        {% for post in posts %}
+            {{ post.content|md }}
+        {% endfor %}
+    {% else %}
+        {{ page.content|md }}
+    {% endif %}
+{% endblock %}

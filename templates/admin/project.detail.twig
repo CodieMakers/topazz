@@ -1,0 +1,53 @@
+{% extends "@admin/admin.twig" %}
+
+{% block content %}
+    <form class="has-bottom-panel" action="" method="post">
+        <section class="card" id="project-detail">
+            <h1><i class="fa fa-briefcase"></i>Project Detail</h1>
+            <article class="form">
+                <div class="row clearfix flex items-center">
+                    <label for="name" class="label flex-auto required">Name:</label>
+                    <input type="text" id="name" value="{{ project.name }}" class="input col-8" required/>
+                </div>
+                <div class="row clearfix flex items-center">
+                    <label for="host" class="label flex-auto required">Domain:</label>
+                    <input type="text" id="host" value="{{ project.host }}" class="input col-8" required/>
+                </div>
+                <div class="row clearfix flex items-center">
+                    <label for="status" class="label flex-auto">Status:</label>
+                    <select id="status" name="status" class="select col-8">
+                        <option value="0"{% if project.status == 0 %} selected{% endif %}>Published</option>
+                        <option value="1"{% if project.status == 1 %} selected{% endif %}>Private</option>
+                        <option value="2"{% if project.status == 2 %} selected{% endif %}>For review</option>
+                    </select>
+                </div>
+                <div class="row clearfix flex items-center">
+                    <label for="theme" class="label flex-auto">Theme:</label>
+                    <select id="theme" v-model="project.theme_name" class="select col-8">
+                        {% for theme in themes %}
+                            <option value="{{ theme.name }}"{% if project.theme_name == theme.name %} selected{% endif %}>
+                                {{ theme.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </article>
+            <article class="footnote">
+                <i class="fa fa-sm fa-star golden-gate mr2"></i>Those inputs are required.
+            </article>
+        </section>
+        <section class="bottom-panel">
+            <div class="right">
+                {% if 'project.remove' in current_user.permissions %}
+                    <a href="{{ admin.uri }}/project/{{ project.id }}/remove"
+                       class="btn btn-primary white bg-golden-gate">
+                        <i class="fa fa-trash"></i>Remove
+                    </a>
+                {% endif %}
+                <button type="submit" class="btn btn-primary white bg-moonstone-blue">
+                    <i class="fa fa-save"></i>Save
+                </button>
+            </div>
+        </section>
+    </form>
+{% endblock %}

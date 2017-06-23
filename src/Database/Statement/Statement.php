@@ -8,15 +8,14 @@
 namespace Topazz\Database\Statement;
 
 
-use Topazz\Data\Collection\Lists\ArrayList;
+use Topazz\Application;
+use Topazz\Data\Collections\Lists\ArrayList;
 use Topazz\Database\Connector;
-use Topazz\Database\Result;
-use Topazz\Database\Table\Table;
+use Topazz\Database\Database;
 
 abstract class Statement implements StatementInterface {
 
     protected $values;
-    protected $entity = \stdClass::class;
 
     public function __construct() {
         $this->values = new ArrayList();
@@ -26,13 +25,10 @@ abstract class Statement implements StatementInterface {
         return $this->values->toArray();
     }
 
-    public function setEntity(string $entity) {
-        $this->entity = $entity;
-        return $this;
-    }
-
-    public function execute(): Result {
-        return Connector::connect()->setEntity($this->entity)->setStatement($this)->execute();
+    public function prepare(string $entity = \stdClass::class): Database {
+        /** @var Connector $connector */
+        $connector = Application::getInstance()->getApp()->getContainer()->get('connector');
+        return $connector->connect()->setEntity($entity)->setStatement($this);
     }
 
     public static function select(string... $columns) {

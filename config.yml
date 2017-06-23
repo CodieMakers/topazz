@@ -1,14 +1,12 @@
-site:
+system:
   default_host: topazz.dev
-
 security:
   behind_proxy: false
-
-modules:
-  installed:
-    -
-      name: admin
-      class: Topazz\Admin\AdministrationModule
-
+themes:
   active:
+    - simple-theme
+modules:
+  active:
+    - auth
     - admin
+    - fa-markdown

@@ -24,7 +24,7 @@ class AssetManager {
     public function css() {
         $cssLinks = "";
         foreach ($this->css as $css) {
-            $cssLinks .= "<link rel=\"stylesheet\" href=\"$css\">";
+            $cssLinks .= "<link rel=\"stylesheet\" href=\"{$css}\">";
         }
         return $cssLinks;
     }
@@ -33,7 +33,7 @@ class AssetManager {
         $jsScripts = "";
         $async = $async? " async" : "";
         foreach ($this->js as $js) {
-            $jsScripts .= "<script$async type=\"application/javascript\" src=\"$js\"></script>";
+            $jsScripts .= "<script$async type=\"application/javascript\" src=\"{$js}\"></script>";
         }
         return $jsScripts;
     }

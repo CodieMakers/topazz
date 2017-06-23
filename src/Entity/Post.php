@@ -8,51 +8,57 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Database\Database;
-use Topazz\Database\Proxy\Proxy;
-use Topazz\Database\Table\Column;
-use Topazz\Database\Table\Table;
+use Topazz\Config\Config;
+use Topazz\Database\Statement\Statement;
 
 class Post extends ContentEntity {
 
-    public $id;
+    protected static $table = "posts";
+    protected static $authorsTable = "post_authors";
+    protected static $authorsContentColumnName = "post_id";
+
     public $title;
     public $content;
     public $page_id;
 
-    public static function getTableDefinition(): Table {
-        return Table::create("posts")->columns(
-            Column::id()
-        );
+    public function __construct() {
+        parent::__construct();
+        if (is_null($this->content)) {
+            $this->content = "";
+        }
     }
 
-    public function authors(): Proxy {
-        return new Proxy(
-            Database::select()->from('users')->whereIn('id',
-                Database::select('user_id')->distinct()
-                    ->from('users_has_posts')
-                    ->where('post_id', '=', $this->id)
-            ), User::class
-        );
+    public function config(): Config {
+        $configs = Statement::select('key', 'value')
+            ->from('post_config')
+            ->where('post_id', $this->id)
+            ->prepare()->execute()->all()->map(function ($configObject) {
+                return new Config([
+                    $configObject->key => json_decode($configObject->value, true)
+                ]);
+            })->toArray();
+        return new Config($configs);
     }
 
     public function page(): Page {
         return Page::find('id', $this->page_id)->first()->orNull();
     }
 
-    public function content(): string {
-        return "";
+    protected function create() {
+        $this->id = Statement::insert(
+            "title", "content", "page_id", "status"
+        )->into("posts")->values(
+            $this->title, $this->content, $this->page_id, $this->status
+        )->prepare()->execute()->lastInsertedId();
     }
 
-    public function create() {
-        // TODO: Implement create() method.
-    }
-
-    public function update() {
-        // TODO: Implement update() method.
-    }
-
-    public function remove() {
-        // TODO: Implement remove() method.
+    protected function update() {
+        Statement::update('posts')
+            ->set("title", $this->title)
+            ->set("content", $this->content)
+            ->set("page_id", $this->page_id)
+            ->set("status", $this->status)
+            ->where("id", $this->id)
+            ->prepare()->execute();
     }
 }

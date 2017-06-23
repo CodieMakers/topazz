@@ -1,5 +1,6 @@
 RewriteEngine on
 RewriteCond %{REQUEST_URI} !^/public/.* [NC]
+RewriteCond %{REQUEST_URI} !^/storage/files/.* [NC]
 RewriteCond %{REQUEST_URI} !^/modules/[\w\-]+/public/.* [NC]
 RewriteCond %{REQUEST_URI} !^/themes/[\w\-]+/public/.* [NC]
 RewriteCond %{REQUEST_FILENAME} !/(index.php|favicon.ico) [NC]

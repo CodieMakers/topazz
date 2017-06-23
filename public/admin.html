@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Administration</title>
+    <link rel="icon" href="/public/favicon.png">
+    <link rel="stylesheet" href="https://unpkg.com/ace-css/css/ace.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/public/css/admin.css">
+</head>
+<body>
+<div id="admin" :class="{'panel-hide': !panelShown}">
+    <a href="#1" @click="togglePanel" :title="panelToggleButtonTitle"
+       class="absolute left-0 bottom-0 m1 p1 text-decoration-none moonstone-blue">
+        <i class="fa" :class="{'fa-angle-left': panelShown, 'fa-angle-right': !panelShown}"></i>
+    </a>
+    <header id="side-panel" class="absolute full-height top-0 left-0 white bg-space-cadet">
+        <section id="user-info" class="flex flex-wrap items-center p2 bg-darken-2">
+            <template v-if="loadingUser">
+                <div class="loading static"></div>
+            </template>
+            <template v-else>
+                <img :src="$currentUser.profile_picture" alt="Profile picture" class="circle col-4"/>
+                <div class="pl2 flex-auto">
+                    <router-link :to="{name:'user', params: {id: $currentUser.id}}" class="white" v-if="canAccess('system.users')">
+                        {{$currentUser.first_name}}<br>{{$currentUser.last_name}}
+                    </router-link>
+                    <p class="white" v-else>
+                        {{$currentUser.first_name}}<br>{{$currentUser.last_name}}
+                    </p>
+                </div>
+            </template>
+        </section>
+        <section id="navigation" class="clearfix">
+            <router-link to="/" class="item white">
+                <i class="fa fa-dashboard"></i>Dashboard
+            </router-link>
+            <router-link to="/projects" class="item white" v-if="canAccess('system.projects')">
+                <i class="fa fa-briefcase"></i>Projects
+            </router-link>
+            <router-link to="/pages" class="item white" v-if="canAccess('system.pages')">
+                <i class="fa fa-file"></i>Pages
+            </router-link>
+            <router-link to="/posts" class="item white" v-if="canAccess('system.posts')">
+                <i class="fa fa-rss"></i>Posts
+            </router-link>
+            <router-link to="/files" class="item white" v-if="canAccess('system.files')">
+                <i class="fa fa-folder-open-o"></i>Files
+            </router-link>
+            <router-link to="/users" class="item white" v-if="canAccess('system.users')">
+                <i class="fa fa-users"></i>Users
+            </router-link>
+            <a href="/auth/logout" class="item white">
+                <i class="fa fa-sign-out golden-gate mr2"></i>Logout
+            </a>
+        </section>
+    </header>
+    <main id="main" class="absolute top-0 right-0 left-0 full-height bg-platinum-light p2 overflow-auto" v-if="!loadingUser">
+        <breadcrumbs></breadcrumbs>
+        <loader></loader>
+        <notifications></notifications>
+        <router-view></router-view>
+    </main>
+</div>
+<script src="/public/js/admin.js"></script>
+</body>
+</html>

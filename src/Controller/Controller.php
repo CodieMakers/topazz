@@ -8,18 +8,22 @@
 namespace Topazz\Controller;
 
 
+use Topazz\Config\Configuration;
 use Topazz\Container;
 use Topazz\View\Renderer;
 
-class Controller {
+abstract class Controller {
 
     /** @var Container $container */
     protected $container;
     /** @var Renderer $renderer */
     protected $renderer;
+    /** @var Configuration $config */
+    protected $config;
 
     public function __construct(Container $container) {
         $this->container = $container;
-        $this->renderer = $container->get('renderer');
+        $this->renderer = $container->renderer;
+        $this->config = $container->config;
     }
 }

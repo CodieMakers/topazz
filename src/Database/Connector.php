@@ -8,36 +8,33 @@
 namespace Topazz\Database;
 
 
-use Topazz\Database\Statement\CreateTable;
-use Topazz\Database\Statement\CreateUser;
-use Topazz\Database\Statement\DropTable;
-use Topazz\Environment;
+use Topazz\Config\Configuration;
+use Topazz\Container;
 
 class Connector {
 
-    private static $username;
-    private static $password;
+    protected $container;
+    /** @var Configuration $config */
+    protected $config;
+    protected $connection;
 
-    public static function setUser(string $username, string $password) {
-        self::$username = $username;
-        self::$password = $password;
+    public function __construct(Container $container) {
+        $this->container = $container;
+        $this->config = $container->config;
     }
 
-    public static function resetUser() {
-        self::$username = Environment::get('DB_USER');
-        self::$password = Environment::get('DB_PASSWORD');
-    }
-
-    public static function connect() {
-        if (is_null(self::$username)) {
-            self::resetUser();
+    public function connect(): Database {
+        if (is_null($this->connection)) {
+            $username = $this->config->get('db.username');
+            $password = $this->config->get('db.password');
+            $dbName = $this->config->get('db.name');
+            $dbHost = $this->config->get('db.host');
+            $this->connection = new Database(
+                "mysql:host={$dbHost};" . (!is_null($dbName) ? " dbname={$dbName};" : ""),
+                $username,
+                $password
+            );
         }
-
-        $dbName = Environment::get("DB_NAME");
-        return new Database(
-            "mysql:host=" . Environment::get("DB_HOST") . ";" . (!is_null($dbName) ? " dbname={$dbName};" : ""),
-            self::$username,
-            self::$password
-        );
+        return $this->connection;
     }
 }

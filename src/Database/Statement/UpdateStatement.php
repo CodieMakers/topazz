@@ -8,7 +8,7 @@
 namespace Topazz\Database\Statement;
 
 
-use Topazz\Data\Collection\Lists\ArrayList;
+use Topazz\Data\Collections\Lists\ArrayList;
 
 class UpdateStatement extends Statement {
 
@@ -23,7 +23,7 @@ class UpdateStatement extends Statement {
         $this->whereClause = new WhereClause();
     }
 
-    public function set(string $column, $value) {
+    public function set(string $column, $value): UpdateStatement {
         $this->setters->put($column);
         $this->values->put($value);
         return $this;
@@ -60,12 +60,14 @@ class UpdateStatement extends Statement {
     }
 
     public function getQueryString(): string {
-        $sql = "UPDATE {$this->table} SET ";
-        $sql .= $this->setters->stream()->map(function ($setter) {
-            return "$setter = ?";
-        })->join(', ');
         $where = "";
+        $set = $this->setters->stream()->map(function ($setter) {
+            return "$setter = ?";
+        })->toString(', ');
+
         if ($this->whereClause->length() > 0) $where = " WHERE " . $this->whereClause->join();
-        return $sql . $where;
+        $this->values->putAll($this->whereClause->getValues());
+
+        return "UPDATE {$this->table} SET {$set}{$where}";
     }
 }

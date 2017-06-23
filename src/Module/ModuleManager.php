@@ -8,9 +8,11 @@
 namespace Topazz\Module;
 
 
-use Topazz\Configuration;
+use Topazz\Config\Config;
+use Topazz\Config\Configuration;
 use Topazz\Container;
-use Topazz\Data\Collection\Lists\ArrayList;
+use Topazz\Data\Collections\ListInterface;
+use Topazz\Data\Collections\Lists\ArrayList;
 use Topazz\Event\EventEmitter;
 
 class ModuleManager {
@@ -21,28 +23,35 @@ class ModuleManager {
     protected $config;
     /** @var EventEmitter $events */
     protected $events;
+    /** @var ModuleInstaller $installer */
+    protected $installer;
 
     protected $modules;
-    protected $themes;
 
     public function __construct(Container $container) {
         $this->container = $container;
         $this->config = $container->get('config');
         $this->events = $container->get('events');
         $this->modules = new ArrayList();
-        $this->themes = new ArrayList();
     }
 
     public function loadModules() {
-        foreach ($this->config->get('modules.installed') as $installedModuleConfigItem) {
-            if (in_array($installedModuleConfigItem['name'], $this->config->get('modules.active'))) {
+        /**
+         * @var string $moduleName
+         * @var Config $moduleItem
+         */
+        foreach ($this->config->get('modules.installed') as $moduleName => $moduleItem) {
+            if ($this->isActive($moduleName)) {
                 /** @var Module $module */
-                $module = new $installedModuleConfigItem['class']($this->container);
-                $this->config->loadModuleConfig($module->getName());
+                $module = new $moduleItem['class']($this->container);
+                $this->config->loadModuleConfig($module);
+                if ($module->hasTemplates()) {
+                    $moduleDir = $moduleItem->get('dir', "modules/{$moduleName}/");
+                    $this->container->templates->addPath($moduleDir . $module->getTemplateDir(), $moduleName);
+                }
                 $this->modules->put($module);
             }
         }
-
         $this->events->emit("onModulesLoad");
     }
 
@@ -55,18 +64,34 @@ class ModuleManager {
         $this->events->emit("onModulesSetup");
     }
 
-    public function getModules(): ArrayList {
+    public function all(): ListInterface {
+        $repository = new ArrayList($this->config->get('modules.installed')->toArray(true));
+        foreach ($repository as $moduleName => &$moduleInfo) {
+            if (in_array($moduleName, $this->config->get('modules.active'))) {
+                $moduleInfo["active"] = true;
+            }
+        }
+        return $repository;
+    }
+
+    public function getLoadedModules(): ListInterface {
         return $this->modules;
     }
 
     public function findModule(string $moduleName) {
-        $list = $this->modules->stream()->filter(function (Module $module) use ($moduleName) {
+        return $this->modules->filter(function (Module $module) use ($moduleName) {
             return $module->getName() === $moduleName;
-        })->toList();
-        return $list->first();
+        })->first();
+    }
+
+    public function isActive(string $moduleName): bool {
+        return in_array($moduleName, $this->config->get('modules.active'));
     }
 
     public function installer(): ModuleInstaller {
-        return new ModuleInstaller();
+        if (!isset($this->installer)) {
+            $this->installer = new ModuleInstaller($this->container);
+        }
+        return $this->installer;
     }
 }

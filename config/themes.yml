@@ -1,0 +1,5 @@
+installed:
+  simple-theme:
+    name: simple-theme
+    dir: ""
+    class: \Topazz\Theme\Simple\SimpleTheme

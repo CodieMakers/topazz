@@ -24,7 +24,19 @@ abstract class Module {
         return $this->name;
     }
 
-    abstract public function isNeeded();
+    abstract public function isNeeded(): bool;
+
+    abstract public function hasTemplates(): bool;
+
+    public function getTemplateDir(): string {
+        return '';
+    }
+
+    abstract public function hasConfig(): bool;
+
+    public function getConfigFilename(): string {
+        return '';
+    }
 
     abstract public function run();
 }

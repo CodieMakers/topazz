@@ -8,14 +8,14 @@
 namespace Topazz\Database\Statement;
 
 
-use Topazz\Data\Collection\Map\Map;
+use Topazz\Data\Collections\Maps\HashMap;
 
 class OrderByClause {
 
     protected $columns;
 
     public function __construct() {
-        $this->columns = new Map();
+        $this->columns = new HashMap();
     }
 
     public function add(string $columnName, $order = "ASC") {

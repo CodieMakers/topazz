@@ -9,74 +9,168 @@ namespace Topazz\Admin;
 
 
 use Slim\App;
-use Topazz\Admin\Controller\AuthController;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use Topazz\Admin\Controller\DashboardController;
+use Topazz\Admin\Controller\FilesController;
 use Topazz\Admin\Controller\ModuleController;
+use Topazz\Admin\Controller\PageController;
+use Topazz\Admin\Controller\PostController;
+use Topazz\Admin\Controller\ProjectController;
+use Topazz\Admin\Controller\SettingsController;
+use Topazz\Admin\Controller\ThemeController;
 use Topazz\Admin\Controller\UserController;
-use Topazz\Admin\Middleware\Authentication;
 use Topazz\Admin\Middleware\Authorization;
-use Topazz\Admin\Middleware\IpRestriction;
 use Topazz\Application;
-use Topazz\Environment;
+use Topazz\Auth\AuthenticationMiddleware;
+use Topazz\Container;
 use Topazz\Middleware\SecurityMiddleware;
 use Topazz\Middleware\TemplateConfigMiddleware;
 use Topazz\Module\Module;
-use Topazz\View\Renderer;
 
 class AdministrationModule extends Module {
 
     protected $name = "admin";
+    protected $application;
+    protected $config;
+    protected $events;
 
-    public function isNeeded() {
-        return $_SERVER['HTTP_HOST'] === $this->container->get('config')->get('admin.host');
+    public function __construct(Container $container) {
+        parent::__construct($container);
+        $this->config = $container->config;
+        $this->events = $container->events;
+        $this->application = Application::getInstance()->getApp();
+    }
+
+    public function isNeeded(): bool {
+        $adminHost = $this->config->get('admin.host');
+        if ($adminHost === "system.default_host") {
+            $adminHost = $this->config->get('system.default_host');
+        }
+        return $_SERVER['HTTP_HOST'] === $adminHost;
+    }
+
+    public function hasTemplates(): bool {
+        return false;
+    }
+
+    public function hasConfig(): bool {
+        return true;
+    }
+
+    public function getConfigFilename(): string {
+        return "admin.yml";
     }
 
     public function run() {
-        $config = $this->container->get('config');
-        $application = Application::getInstance()->getApp();
-        $events = $this->container->get('events');
-        $this->container->get('renderer')
-            ->registerTemplateDir("templates/admin", "admin");
 
-        $events->emit("onBeforeAdminInit");
+        $this->events->emit("onBeforeAdminInit");
 
-        $application->group($config->get("admin.uri"), function () {
+        $this->application->group($this->config->get('admin.uri'), function () {
             /** @var App $this */
-            $this->get("", DashboardController::class . ":index");
+            $this->get('', function (Request $request, Response $response) {
+                return $response->withRedirect('/admin/');
+            });
+            $this->get('/', DashboardController::class . ":index");
+            $this->get('/current-user', DashboardController::class . ':currentUser');
+            $this->get('/dashboard', DashboardController::class . ':getData');
+            $this->get('/nonce', DashboardController::class . ':nonce');
+            $this->get('/csrf', DashboardController::class . ':csrfToken');
 
-            $this->get("/users", UserController::class . ':index');
-            $this->get("/user/{id:[0-9]*}", UserController::class . ':detail');
-            $this->post("/user/{id:[0-9]*}", UserController::class . ':saveDetail');
-            $this->any("/user/{id:[0-9]*}/delete", UserController::class . ':delete');
-
-            $this->get('/modules', ModuleController::class . ':index')->add(Authorization::withPermission('modules.list'));
-            $this->group('/module/{moduleName}', function () {
+            // ------------ USERS
+            $this->group('/users', function () {
                 /** @var App $this */
-                $this->get('', ModuleController::class . ':detail');
-                $this->post('/install', ModuleController::class . ':install');
-                $this->post('/remove', ModuleController::class . ':remove');
-                $this->post('/enable', ModuleController::class . ':enable');
-                $this->post('/disable', ModuleController::class . ':disable');
+                $this->get('', UserController::class . ':index');
+                $this->get('/{id:[0-9]+}', UserController::class . ':detail');
+                $this->put('', UserController::class . ':create');
+                $this->post('/{id:[0-9]+}', UserController::class . ':update');
+                $this->delete('/{id:[0-9]+}', UserController::class . ':remove');
+            })->add(Authorization::withPermission('system.users'));
 
-            })->add(Authorization::withPermission('modules.edit'));
+            // ------------ PROJECTS
+            $this->group('/projects', function () {
+                /** @var App $this */
+                $this->get("", ProjectController::class . ':index');
+                $this->get('/{id:[0-9]+}', ProjectController::class . ':detail');
+                $this->put('', ProjectController::class . ':create');
+                $this->post('/{id:[0-9]+}', ProjectController::class . ':update');
+                $this->delete('/{id:[0-9]+}', ProjectController::class . ':remove');
+            })->add(Authorization::withPermission('system.projects'));
 
+            // ------------ PAGES
+            $this->group('/pages', function () {
+                /** @var App $this */
+                $this->get("", PageController::class . ':index');
+                $this->get('/{id:[0-9]+}', PageController::class . ':detail');
+                $this->put('', PageController::class . ':create');
+                $this->post('/{id:[0-9]+}', PageController::class . ':update');
+                $this->delete('/{id:[0-9]+}', PageController::class . ':remove');
+            })->add(Authorization::withPermission('system.pages'));
+
+            // ------------ POSTS
+            $this->group('/posts', function () {
+                /** @var App $this */
+                $this->get("", PostController::class . ':index');
+                $this->get('/[{id:[0-9]+}]', PostController::class . ':detail');
+                $this->put('', PostController::class . ':create');
+                $this->post('/{id:[0-9]+}', PostController::class . ':update');
+                $this->delete('/{id:[0-9]+}', PostController::class . ':remove');
+            })->add(Authorization::withPermission('system.posts'));
+
+            // ------------ MODULES
+            $this->group('/modules', function () {
+                /** @var App $this */
+                $this->get('', ModuleController::class . ':index');
+                $this->group('/detail/{moduleName}', function () {
+                    /** @var App $this */
+                    $this->get('', ModuleController::class . ':detail');
+                    $this->post('', ModuleController::class . ':update');
+                    $this->delete('', ModuleController::class . ':remove');
+                });
+                $this->group('/install', function () {
+                    /** @var App $this */
+                    $this->get('', ModuleController::class . ':installIndex');
+                    $this->post('/{moduleName}', ModuleController::class . ':install');
+                });
+            })->add(Authorization::withPermission('system.modules'));
+
+            // ------------ THEMES
+            $this->group('/themes', function () {
+                /** @var App $this */
+                $this->get('', ThemeController::class . ':index');
+                $this->group('/detail/{themeName}', function () {
+                    /** @var App $this */
+                    $this->get('', ThemeController::class . ':detail');
+                    $this->post('', ThemeController::class . ':update');
+                    $this->delete('', ThemeController::class . ':remove');
+                });
+                $this->group('/install', function () {
+                    /** @var App $this */
+                    $this->get('', ThemeController::class . ':installIndex');
+                    $this->post('/{themeName}', ThemeController::class . ':install');
+                });
+            })->add(Authorization::withPermission('system.themes'));
+
+            // ------------ SETTINGS
+            $this->group('/settings', function () {
+                /** @var App $this */
+                $this->get('', SettingsController::class . ':index');
+                $this->post('', SettingsController::class . ':update');
+            })->add(Authorization::withPermission('system.settings'));
+
+            // ------------ FILES
+            $this->group('/files', function () {
+                /** @var App $this */
+                $this->get('', FilesController::class . ':index');
+                $this->post('', FilesController::class . ':upload');
+                $this->delete('/{name}', FilesController::class . ':remove');
+            });
         })
-            ->add(SecurityMiddleware::ipRestriction())
-            ->add(new Authentication())
-            ->add($this->container->get('guard'))
-            ->add(TemplateConfigMiddleware::withBodyClass("admin"))
-            ->add(TemplateConfigMiddleware::withPageTitle('AdministrationModule'));
+            ->add(SecurityMiddleware::ipRestriction($this->config->get('admin.security.ip_restriction')))
+            ->add($this->container->security->guard())
+            ->add(AuthenticationMiddleware::withRedirect('/admin/'));
 
-        $events->emit("onAfterAdminInit");
-        $events->emit("onAdminInit");
-
-        $application->map(["GET", "POST"], "/login", AuthController::class . ":login")
-            ->add(TemplateConfigMiddleware::withBodyClass("login"))->setName("login");
-
-        $application->get("/logout", AuthController::class . ":logout")
-            ->add(TemplateConfigMiddleware::withBodyClass("logout"))->setName("logout");
-
-        $application->post("/register", AuthController::class . ":register")
-            ->add(TemplateConfigMiddleware::withBodyClass("register"))->setName("register");
+        $this->events->emit("onAfterAdminInit");
+        $this->events->emit("onAdminInit");
     }
 }

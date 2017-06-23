@@ -1,0 +1,4 @@
+host: system.default_host
+uri: /admin
+security:
+  ip_restriction: "*.*.*.*"

@@ -1,0 +1,55 @@
+{% extends "layout.twig" %}
+
+{% block assets %}
+    {% do parent() %}
+    {% do assets.addCss('/public/css/auth.css') %}
+    {% do assets.addJs("/public/js/form.js") %}
+{% endblock %}
+
+{% block content %}
+    <section id="login-form" class="bg-white charcoal">
+        <h1 class="block center border-bottom border-moonstone-blue pb2">Login</h1>
+        <form action="" method="post" class="mt3">
+            {% if error is defined %}
+                <div class="clearfix golden-gate border border-golden-gate rounded mb2 p1">
+                    {{ error }}
+                </div>
+                {% if show_lost_password is defined %}
+                    <div class="clearfix golden-gate border border-golden-gate rounded mb2 p1">
+                        Have you lost or forgotten your password? Try to <a href="/auth/reset" class="btn btn-outline golden-gate-dark">recover</a> it.
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="clearfix relative">
+                <label for="username" class="absolute top-0 left-0 z-1 px1 m1">
+                    <i class="fa fa-user"></i>
+                </label>
+                <input type="text" placeholder="Username" id="username" name="username"
+                       class="px3 input" required value="{{ username }}"/>
+            </div>
+            <div class="clearfix relative">
+                <label for="password" class="absolute top-0 left-0 z-1 px1 m1">
+                    <i class="fa fa-lock"></i>
+                </label>
+                <input type="password" id="password" name="password"
+                       class="px3 input" required/>
+                <div class="absolute top-0 right-0 px1 m1 password-reveal" data-password="password">
+                    <i class="fa fa-eye"></i>
+                </div>
+            </div>
+            <div class="clearfix flex align-center justify-center">
+                <label for="remember-me" class="h6">Remember me on this computer:</label>
+                <div class="checkbox toggle">
+                    <input type="checkbox" id="remember-me" name="remember-me" {% if remember-me is defined and remember-me == "on" %} checked {% endif %}/>
+                    <label for="remember-me"></label>
+                </div>
+            </div>
+            <div class="clearfix flex items-center justify-end mt4">
+                <a href="/reset-password" class="moonstone-blue h6 text-decoration-none mr3">Have you forgotten your password?</a>
+                <button type="submit" class="btn btn-primary bg-moonstone-blue white">Login</button>
+            </div>
+            {{ nonce_input() }}
+        </form>
+    </section>
+{% endblock %}
+

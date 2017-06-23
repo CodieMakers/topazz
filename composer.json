@@ -20,7 +20,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Topazz\\Tests\\": "tests/"
+      "Topazz\\": "tests/"
     }
   },
   "autoload": {
@@ -45,7 +45,10 @@
     "knplabs/gaufrette": "^0.3.1",
     "respect/validation": "^1.1",
     "davidepastore/slim-restrict-route": "^0.3.0",
-    "akrabat/rka-ip-address-middleware": "^0.5.0"
+    "akrabat/rka-ip-address-middleware": "^0.5.0",
+    "gravatarphp/gravatar": "1.*",
+    "composer/spdx-licenses": "1.1.*",
+    "topazz/fa-markdown": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "6.1.*",

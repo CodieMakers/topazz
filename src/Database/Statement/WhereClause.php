@@ -8,7 +8,7 @@
 namespace Topazz\Database\Statement;
 
 
-use Topazz\Data\Collection\Lists\ArrayList;
+use Topazz\Data\Collections\Lists\ArrayList;
 use Topazz\Database\Table\ColumnCollection;
 use Topazz\Database\Table\Table;
 
@@ -42,8 +42,7 @@ class WhereClause {
             $expression .= ($not ? "NOT " : "") . "{$columnName} IS " . ($value ? "TRUE" : "FALSE");
         } elseif (is_string($value)) {
             $value = htmlspecialchars($value);
-            $value = "%$value%";
-            $expression .= "{$columnName}{$not} LIKE ?";
+            $expression .= "{$columnName}{$not} = ?";
             $this->values->put($value);
         } elseif (is_int($value) || is_float($value)) {
             $expression .= "{$columnName} = ?";
@@ -51,6 +50,18 @@ class WhereClause {
         }
         $this->whereExpressions->put($expression);
         return $this;
+    }
+
+    public function whereLike(string $column, string $value, $not = false, $chain = "AND") {
+        $prepend = "";
+        if ($this->whereExpressions->length() > 0) {
+            $prepend = "{$chain} ";
+        }
+        if ($not) {
+            $column .= " NOT";
+        }
+        $this->whereExpressions->put($prepend . "{$column} LIKE ?");
+        $this->values->put("%{$value}%");
     }
 
     public function whereExists(StatementInterface $statement, $not = false, $chain = "AND") {
@@ -64,10 +75,10 @@ class WhereClause {
     }
     
     public function join(): string {
-        return $this->whereExpressions->stream()->join(' ');
+        return $this->whereExpressions->stream()->toString(' ');
     }
 
-    public function getValues(): ArrayList {
-        return $this->values;
+    public function getValues(): array {
+        return $this->values->toArray();
     }
 }

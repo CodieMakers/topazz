@@ -8,7 +8,7 @@
 namespace Topazz\Database\Statement;
 
 
-use Topazz\Data\Collection\Lists\ArrayList;
+use Topazz\Data\Collections\Lists\ArrayList;
 use Topazz\Database\Table\Table;
 use Topazz\TopazzApplicationException;
 
@@ -70,6 +70,11 @@ class SelectStatement extends Statement {
         return $this;
     }
 
+    public function whereLike(string $column, string $value): SelectStatement {
+        $this->whereClause->whereLike($column, $value);
+        return $this;
+    }
+
     public function whereExists(StatementInterface $statement): SelectStatement {
         $this->whereClause->whereExists($statement);
         return $this;
@@ -104,8 +109,13 @@ class SelectStatement extends Statement {
         if (!is_array($columnNames)) {
             $columnNames = (array)$columnNames;
         }
+        if (preg_match('/(ASC|DESC)/', $order)) {
+            $order = " " . $order;
+        } else {
+            $order = "";
+        }
         foreach ($columnNames as $columnName) {
-            $this->orderByClause->put([$columnName => $order]);
+            $this->orderByClause->put("{$columnName}{$order}");
         }
         return $this;
     }
@@ -119,18 +129,18 @@ class SelectStatement extends Statement {
 
         // --------- SELECT
         if ($this->distinct) $selectExpression .= "DISTINCT ";
-        $selectExpression .= $this->selectedColumns->stream()->join(', ');
+        $selectExpression .= $this->selectedColumns->stream()->toString(', ');
         // --------- FROM
         $tableReference .= "{$this->table}";
-        if ($this->joinClauses->length() > 0) $tableReference .= " " . $this->joinClauses->stream()->join(' ');
+        if ($this->joinClauses->length() > 0) $tableReference .= " " . $this->joinClauses->stream()->toString(' ');
         // --------- GROUP BY
-        if ($this->groupByColumns->length() > 0) $groupByClause = " GROUP BY " . $this->groupByColumns->stream()->join(', ');
+        if ($this->groupByColumns->length() > 0) $groupByClause = " GROUP BY " . $this->groupByColumns->stream()->toString(', ');
         // --------- WHERE / HAVING
         if ($this->whereClause->length() > 0) $whereClause = !empty($groupByClause) ? " HAVING " : " WHERE ";
         $whereClause .= $this->whereClause->join();
         $this->values->putAll($this->whereClause->getValues());
         // --------- ORDER BY
-
+        if ($this->orderByClause->length() > 0) $orderByClause = " ORDER BY " . $this->orderByClause->stream()->toString(', ');
 
         return
             "SELECT {$selectExpression} FROM {$tableReference}{$groupByClause}{$whereClause}{$orderByClause}{$this->limitClause}";

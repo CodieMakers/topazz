@@ -8,63 +8,51 @@
 namespace Topazz;
 
 
-use Composer\Autoload\ClassLoader;
+use Psr\Http\Message\ResponseInterface;
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
+use Topazz\Entity\Project;
 use Topazz\Event\EventEmitter;
-use Topazz\Middleware\ProjectResolver;
-use Topazz\Module\ModuleManager;
-use Topazz\Service\HttpServiceProvider;
-use Topazz\Service\LoggerServiceProvider;
-use Topazz\Service\SecurityServiceProvider;
-use Topazz\View\Renderer;
+use Topazz\Middleware\MiddlewareInterface;
 
-class Application {
+class Application implements MiddlewareInterface {
 
     private static $instance;
-
-    private static $services = [
-        LoggerServiceProvider::class,
-        HttpServiceProvider::class,
-        "events" => EventEmitter::class,
-        "config" => Configuration::class,
-        "renderer" => Renderer::class,
-        "modules" => ModuleManager::class,
-        SecurityServiceProvider::class
-    ];
 
     /** @var App $app */
     protected $app;
     /** @var Container $container */
     protected $container;
 
-    public function __construct(ClassLoader $classLoader) {
+    public function __construct(array $settings = []) {
         self::$instance = $this;
-
         Environment::load();
-
-        $this->container = new Container([
+        $this->container = new Container(array_merge([
+            'configDir' => "config",
+            'configFilename' => "config.yml",
+            'templatesDir' => "templates",
             'determineRouteBeforeAppMiddleware' => true,
             'displayErrorDetails' => !Environment::isProduction()
-        ]);
+        ], $settings));
         $this->app = new App($this->container);
-
-        foreach (self::$services as $key => $serviceClass) {
-            if (is_int($key)) {
-                $this->container->register(new $serviceClass);
-            } else {
-                $this->container->registerService($key, $serviceClass);
-            }
-        }
-
+        $this->container->loadServices();
         $this->app->add(EventEmitter::emitEventAfterMiddleware("onShutdown"));
+        $this->app->add($this);
+        $this->container->events->emit("onInit");
+    }
 
-        $this->app->add(new ProjectResolver());
-        $this->container->get('events')->emit("onInit");
+    public function __invoke(Request $request, Response $response, callable $next): ResponseInterface {
+        /** @var Project $project */
+        $project = Project::findByHost($request->getUri()->getHost())->orNull();
+        if (!is_null($project) && $project->hasPage($request->getUri()->getPath())) {
+            return $project->render($request, $response);
+        }
+        return $next($request, $response);
     }
 
     public function run() {
-        /** @var ModuleManager $modules */
-        $modules = $this->container->get('modules');
+        $modules = $this->container->modules;
         $modules->loadModules();
         $modules->run();
         return $this->app->run(false);

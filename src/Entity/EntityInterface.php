@@ -8,8 +8,7 @@
 namespace Topazz\Entity;
 
 
-use Topazz\Data\Collection\Lists\ListInterface;
-use Topazz\Database\Table\Table;
+use Topazz\Data\Collections\ListInterface;
 
 interface EntityInterface {
 
@@ -17,11 +16,9 @@ interface EntityInterface {
 
     public static function find(string $key, $value): ListInterface;
 
-    public static function getTableDefinition(): Table;
+    public static function findById(int $id);
 
-    public function create();
+    public function save();
 
-    public function update();
-
-    public function remove();
+    public static function remove(int $id): bool;
 }

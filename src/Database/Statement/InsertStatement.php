@@ -37,8 +37,8 @@ class InsertStatement extends Statement {
         }
         $sql .= "VALUES ";
         $values = [];
-        for ($i = 0; $i <= $this->valuesInserted; $i++) {
-            $values[] = "(" . join(",", array_fill(0, $this->what->keys()->length() - 1, "?")) . ")";
+        for ($i = 1; $i <= $this->valuesInserted; $i++) {
+            $values[] = "(" . join(",", array_fill(0, count($this->what), "?")) . ")";
         }
         return $sql . join(', ', $values);
     }

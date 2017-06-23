@@ -13,28 +13,37 @@ use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Topazz\Application;
+use Topazz\Container;
 use Topazz\Data\RandomStringGenerator;
 
 class SecurityMiddleware {
 
     public static function nonce() {
+        /** @var Container $container */
         $container = Application::getInstance()->getApp()->getContainer();
         return function (Request $request, Response $response, callable $next) use ($container): Response {
-            $flash = $container->get('flash');
-            $previousNonce = $request->getParsedBodyParam('nonce');
-            if (is_null($previousNonce)) {
-                $previousNonce = $request->getQueryParam('nonce');
+            $flash = $container->flash;
+            if ($flash->hasMessage('nonce')) {
+                $nonceInFlash = $flash->getMessage('nonce');
+                $nonceInRequest = $request->getParsedBodyParam('nonce');
+                if (is_null($nonceInRequest)) {
+                    $nonceInRequest = $request->getQueryParam('nonce');
+                }
+                if (is_null($nonceInRequest) || $nonceInRequest !== $nonceInFlash) {
+                    return $response->withStatus(429); // 429: Too Many Requests
+                }
             }
-            if (!is_null($previousNonce) && is_string($previousNonce) && $flash->hasMessage('nonce')) {
-                // TODO: implement nonce
-            }
-            $nonce = RandomStringGenerator::generate(30);
-            $flash->addMessageNow('nonce', $nonce);
-            return $next($request->withAttribute('nonce', $nonce), $response);
+            return $next($request, $response);
         };
     }
 
-    public static function ipRestriction($options = []) {
+    public static function ipRestriction(string $ipPattern) {
+        $options = [];
+        if ($ipPattern !== "*.*.*.*") $options["ip"] = $ipPattern;
         return new RestrictRoute($options);
+    }
+
+    public static function guard() {
+        return Application::getInstance()->getApp()->getContainer()->get('guard');
     }
 }
