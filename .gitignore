@@ -17,3 +17,5 @@
 !/composer.json
 !/.htaccess
 !.gitkeep
+/public/sass/
+/public/admin/
